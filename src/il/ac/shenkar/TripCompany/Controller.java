@@ -81,7 +81,7 @@ public class Controller extends HttpServlet {
 			}
 			Connection connection = null;
 			try {
-				connection = DriverManager.getConnection("jdbc:mysql://ec2-23-21-211-172.compute-1.amazonaws.com/tripCompany", "jaja2", "gaga");
+				connection = DriverManager.getConnection("jdbc:mysql://localhost/test", "jaja", "gaga");
 				Statement statement = connection.createStatement();
 				//executing statements the create the main tables
 				statement.executeUpdate(createTripTable);
