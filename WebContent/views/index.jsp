@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
 
-    <title>MySQL Project 2014</title>
+    <title>MySQL Project 2014 - Vidran Abdovich & Ofir Aghai</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../views/css/bootstrap.css" rel="stylesheet">
@@ -37,7 +37,7 @@
           <li><a href="#">About</a></li>
           <li><a href="#">Contact</a></li>
         </ul>
-        <h3 class="text-muted">MySQL Project 2014</h3>
+        <h3 class="text-muted">MySQL Project 2014</h3><small>by Ofir Aghai & Vidran Abdovich</small>
       </div>
       <br><br>
       
