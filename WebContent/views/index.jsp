@@ -41,7 +41,7 @@
 			   	<a href = "../views/addTrip.jsp"><button type="button" class="btn btn-primary">Add trip</button></a>
 			   	<br>
 			   	
-				<form action= "../controller/updateTrip" method="get">
+				<form action= "../controller/tripUpdatePreview" method="get">
 				    Trip Name to update: <input type="Text" name="tripUpdateName">
 				    <!-- submit-button update trip -->
 				    <button type="submit" class="btn btn-primary">Update Trip</button>

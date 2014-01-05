@@ -8,12 +8,14 @@
 </head>
 <body>
 <%
+
+int id = (Integer)request.getAttribute("id");
 String tripName = (String)request.getAttribute("tripName");
 String startDate = (String)request.getAttribute("startDate");
 String endDate = (String)request.getAttribute("endDate");
 double ratePerTraveler = (Double)request.getAttribute("ratePerTraveler");
 int numOfTravelers = (Integer)request.getAttribute("numOfTravelers");
-int id = (Integer)request.getAttribute("id");
+
 
 %>
 
@@ -25,5 +27,6 @@ End date: <input type="text" name="endDate" value="<% out.print(endDate); %>"><b
 Rate per traveler: <input type="text" name="ratePerTraveler" value="<% out.print(ratePerTraveler); %>"><br>
 num Of Travelers:<input type="text" name="numOfTravelers" value="<% out.print(numOfTravelers); %>"><br>
 <input type="submit" value="Update">
+</form>
 </body>
 </html>
