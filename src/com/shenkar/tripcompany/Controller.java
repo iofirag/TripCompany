@@ -124,7 +124,7 @@ public class Controller extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String str = request.getPathInfo();
-		System.out.println("doGet");	
+		System.out.println("doGet");
 		try {
 		    
 	    	
@@ -171,7 +171,7 @@ public class Controller extends HttpServlet {
 				
 				RequestDispatcher dispatcher = getServletContext()
 						.getRequestDispatcher("/views/index.jsp");
-				dispatcher.forward(request, response);	
+				dispatcher.forward(request, response);
 		    }
 	    	//working!
 			else if(str.equals("/addSite")){
@@ -196,56 +196,125 @@ public class Controller extends HttpServlet {
 
 	    	
 	    	
-////---------Delete----------------------------------------------------- 
-	    			else if(str.equals("/tripUpdatePreview")){
-	    				String tripUpdateName = request.getParameter("tripUpdateName");
+////---------preview (before update)----------------------------------------------------- 
+			else if (str.equals("/tripUpdatePreview")){
+                //Select in database the trip with the name passed to the controller
+                //then pass the trip details to jsp preview form
+				String tripUpdateName= request.getParameter("tripUpdateName");
+				// Trip fields
+				String tripName = null;
+                String startDate= null;
+                String endDate= null;
+                double ratePerTraveler = 0;
+                int numOfTravelers = 0;
+                int id=0;
+                try {
+	                	PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM trip WHERE name=?");
+	                    prepstate.setString(1, tripUpdateName);
+	                    ResultSet rs = prepstate.executeQuery();
+	                    while (rs.next())
+	                    {
+	                    	if(rs.getString("name").equals(tripUpdateName)){
+	                            id=        rs.getInt("tripId");
+	                            tripName = rs.getString("name");
+	                            startDate = rs.getString("startDate");
+	                            endDate = rs.getString("endDate");
+	                            ratePerTraveler = rs.getDouble("ratePerTraveler");
+	                            numOfTravelers = rs.getInt("numOfTravelers"); 
+	                            break;
+	                    	}
+	                    }
+	                    request.setAttribute("id", id);
+	                    request.setAttribute("tripName", tripName);
+	                    request.setAttribute("startDate", startDate);
+	                    request.setAttribute("endDate", endDate);
+	                    request.setAttribute("ratePerTraveler", ratePerTraveler);
+	                    request.setAttribute("numOfTravelers", numOfTravelers);
+                        
+                } catch (SQLException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                }
+                
+                RequestDispatcher dispatcher = getServletContext()
+                                .getRequestDispatcher("/views/tripUpdatePreview.jsp");
+                dispatcher.forward(request, response);        
+			}
 
-	    				int id = 0;
-	    				String tripName = null;
-	    			    String startDate = null;
-	    				String endDate = null;
-	    				Double ratePerTraveler = null;
-	    				int numOfTravelers = 0;
-
-	    				PreparedStatement prepstate = connection.prepareStatement(
-	    	    						"SELECT * FROM `tripcompany`.`trip` WHERE name=?"
-	    	    						);
-						prepstate.setString(1, tripUpdateName);
-						ResultSet rs =prepstate.executeQuery();
-						
-	    				if (rs.getRow()>0){
-	    					System.out.println("rs != null");
-	    					id=	rs.getInt("tripId");
-	    					tripName = rs.getString("name");
-	    				    startDate = rs.getString("startDate");
-	    					endDate = rs.getString("endDate");
-	    					ratePerTraveler = rs.getDouble("ratePerTraveler");
-	    					numOfTravelers = rs.getInt("numOfTravelers");	
-	    				}
-	    				
-	    				request.setAttribute("id", id);
-	    				request.setAttribute("tripName", tripName);
-	    				request.setAttribute("startDate", startDate);
-	    				request.setAttribute("endDate", endDate);
-	    				request.setAttribute("ratePerTraveler", ratePerTraveler);
-	    				request.setAttribute("numOfTravelers", numOfTravelers);
-	    				
-	    				RequestDispatcher dispatcher = getServletContext()
-	    						.getRequestDispatcher("/views/tripUpdatePreview.jsp");
-	    				dispatcher.forward(request, response);
-	    		    }
-	    			else if(str.equals("/previewInstructor")){
-	    				// TODO Auto-generated catch block 	
-	    			}
-	    			else if(str.equals("/previewSite")){
-	    				// TODO Auto-generated catch block
-	    		    }
+			else if(str.equals("/instructorUpdatePreview")){
+				String instructorUpdateId= request.getParameter("instructorUpdateId");
+				// instructor fields
+				String instructorId = null;
+				String name = null;
+				String lastName = null;
+				String address = null;
+                try {
+                		PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM instructor WHERE instructorId=?");
+                        prepstate.setString(1, instructorUpdateId);
+                        ResultSet rs = prepstate.executeQuery();
+                        while (rs.next())
+                        {
+                        	if(rs.getString("instructorId").equals(instructorUpdateId)){
+                        		instructorId = rs.getString("instructorId");
+                        		name = rs.getString("name");
+                        		lastName = rs.getString("lastName");
+                        		address = rs.getString("address");
+                        		break;
+                        	}
+                        }
+                        request.setAttribute("instructorId", instructorId);
+                        request.setAttribute("name", name);
+                        request.setAttribute("lastName", lastName);
+                        request.setAttribute("address", address);
+                        
+                } catch (SQLException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                }
+                
+                RequestDispatcher dispatcher = getServletContext()
+                                .getRequestDispatcher("/views/instructorUpdatePreview.jsp");
+                dispatcher.forward(request, response);   
+			}
+	    	
+			else if(str.equals("/siteUpdatePreview")){
+				String siteUpdateName= request.getParameter("siteUpdateName");
+				// Site fields
+				String name = null;
+				String instructorId = null;
+				String duration = null;
+                try {
+                		PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM site WHERE name=?");
+                        prepstate.setString(1, siteUpdateName);
+                        ResultSet rs = prepstate.executeQuery();
+                        while (rs.next())
+                        {
+                        	if(rs.getString("name").equals(siteUpdateName)){
+                        		name = rs.getString("name");
+                        		instructorId = rs.getString("instructorId");
+                        		duration = rs.getString("duration");
+                        		break;
+                        	}
+                        }
+                        request.setAttribute("name", name);
+                        request.setAttribute("instructorId", instructorId);
+                        request.setAttribute("duration", duration);
+                        
+                } catch (SQLException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                }
+                
+                RequestDispatcher dispatcher = getServletContext()
+                                .getRequestDispatcher("/views/instructorUpdatePreview.jsp");
+                dispatcher.forward(request, response); 
+		    }
 	    	
 	    	
 		    
 ////------------Update-------------------------------------------------- 
 			else if(str.equals("/updateTripAfterPreview")){
-				System.out.println("/updateTripAfterPreview");
+				
 		    }
 			else if(str.equals("/updateInstructorAfterPreview")){
 				// TODO Auto-generated catch block	

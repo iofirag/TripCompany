@@ -65,8 +65,8 @@
 			   	<a href = "../views/addInstructor.jsp"><button type="button" class="btn btn-success">Add Instructor</button></a>
 			   	<br>
 			   	
-				<form action= "../controller/updateInstructor" method="get">
-				    Instructor name to update: <input type="Text" name="instructorUpdateName">
+				<form action= "../controller/instructorUpdatePreview" method="get">
+				    Instructor ID to update: <input type="Text" name="instructorUpdateId">
 				    <!-- submit-button update trip -->
 				    <button type="submit" class="btn btn-success">Update Instructor</button>
 				</form>
@@ -89,7 +89,7 @@
 			   	<a href = "../views/addSite.jsp"><button type="button" class="btn btn-danger">Add Site</button></a>
 			   	<br>
 			   	
-				<form action= "../controller/updateSite" method="get">
+				<form action= "../controller/siteUpdatePreview" method="get">
 				    Site name to update: <input type="Text" name="siteUpdateName">
 				    <!-- submit-button update trip -->
 				    <button type="submit" class="btn btn-danger">Update Site</button>
