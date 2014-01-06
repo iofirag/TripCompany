@@ -48,7 +48,7 @@
 				    <button type="submit" class="btn btn-primary">Update Trip</button>
 				</form>
 				
-				  <br><br>
+				  <br>
 				  
 				<form action="../controller/deleteTrip" method="get">
 				    Trip name to delete: <input type="Text" name="tripDeleteName">
@@ -72,7 +72,7 @@
 				    <button type="submit" class="btn btn-success">Update Instructor</button>
 				</form>
 				
-				  <br><br>
+				  <br>
 				  
 				<form action="../controller/deleteInstructor" method="get">
 				    Instructor name to delete: <input type="Text" name="instructorDeleteName">
@@ -96,7 +96,7 @@
 				    <button type="submit" class="btn btn-danger">Update Site</button>
 				</form>
 				
-				  <br><br>
+				  <br>
 				  
 				<form action="../controller/deleteSite" method="get">
 				    Site name to delete: <input type="Text" name="siteDeleteName">

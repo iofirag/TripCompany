@@ -17,6 +17,8 @@ String address = (String)request.getAttribute("address");
 
 %>
 
+<h1>Update Instructor:</h1><br><br>
+
 	<form action="../controller/updateInstructorAfterPreview" method="get">
 		<input type="hidden" name="instuctorIdOld" value="<% out.print(instuctorIdOld); %>">
 		Instructor ID: <input type="text" name="instructorId" value="<% out.print(instructorId); %>"><br>

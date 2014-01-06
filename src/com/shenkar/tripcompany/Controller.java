@@ -316,17 +316,7 @@ public class Controller extends HttpServlet {
 	    	
 		    
 ////------------Update-After Preview------------------------------------------------- 
-	    	//----------------------------------------------------------------
-	    	// Example:														//
-	    	//UPDATE tablename												//
-            //SET (col1, col2, ..., colN) = ('val1', 'val2', ..., 'valN')	//
-            //WHERE id = id_value											//
-            //--or--														//
-            //UPDATE tablename												//
-            //SET col1 = 'val1', col2 = 'val2' ...							//
-            //WHERE id = id_value											//
-	    	//----------------------------------------------------------------
-	    	
+	    	//Working!
 			else if(str.equals("/updateTripAfterPreview")){
 				// Trip fields
 				int tripId= Integer.parseInt( request.getParameter("tripId") ); // P.k
@@ -336,61 +326,63 @@ public class Controller extends HttpServlet {
                 int numOfTravelers = Integer.parseInt( request.getParameter("numOfTravelers") );
                 double ratePerTraveler = Double.parseDouble( request.getParameter("ratePerTraveler")  );
                 
-                //add to db this fields
-                PreparedStatement prepstate = connection.prepareStatement (
-                		" UPDATE trip "
-                		+" SET name=?, startDate=?, endDate=?, numOfTravelers=?, ratePerTraveler=? "
-                		+" WHERE tripId=?"
-                			);
+//                //add to db this fields
+                PreparedStatement prepstate = connection.prepareStatement (" UPDATE trip SET name=?, startDate=?, endDate=?, numOfTravelers=?, ratePerTraveler=? WHERE tripId=?" );
                 prepstate.setString(1, name);
                 prepstate.setString(2, startDate);
                 prepstate.setString(3, endDate);
                 prepstate.setInt(4, numOfTravelers);
                 prepstate.setDouble(5, ratePerTraveler);
                 prepstate.setInt(6, tripId);
-                ResultSet rs = prepstate.executeQuery();
+                prepstate.executeUpdate();
+
+                RequestDispatcher dispatcher = getServletContext()
+						.getRequestDispatcher("/views/success.jsp");
+				dispatcher.forward(request, response);
 		    }
 	    	
+	    	//Working
 			else if(str.equals("/updateInstructorAfterPreview")){
 				// Instructor fields
-				String instructorId = (String)request.getAttribute("instructorId");
-				String instuctorIdOld = instructorId; // Save P.k for future
-				String name = (String)request.getAttribute("name");
-				String lastName = (String)request.getAttribute("lastName");
-				String address = (String)request.getAttribute("address");
+				String instructorId = request.getParameter("instructorId");
+				String instuctorIdOld = request.getParameter("instuctorIdOld"); // Save P.k for future
+				String name = request.getParameter("name");
+				String lastName = request.getParameter("lastName");
+				String address = request.getParameter("address");
 				
 				//add to db this fields
-                PreparedStatement prepstate = connection.prepareStatement (
-                		" UPDATE instructor "
-                		+" SET instructorId=?, name=?, lastName=?, address=? "
-                		+" WHERE instructorId=?"
-                			);
+                PreparedStatement prepstate = connection.prepareStatement (" UPDATE instructor SET instructorId=?, name=?, lastName=?, address=? WHERE instructorId=?");
                 prepstate.setString(1, instructorId);
                 prepstate.setString(2, name);
                 prepstate.setString(3, lastName);
                 prepstate.setString(4, address);
                 prepstate.setString(5, instuctorIdOld);
-                ResultSet rs = prepstate.executeQuery();
+                prepstate.executeUpdate();
+                
+                RequestDispatcher dispatcher = getServletContext()
+						.getRequestDispatcher("/views/success.jsp");
+				dispatcher.forward(request, response);
 			}
 	    	
+	    	//Working!
 			else if(str.equals("/updateSiteAfterPreview")){
 				// Site fields
-				String name = (String)request.getAttribute("name");
-				String nameOld = name; // Save P.K for future use
-				String instructorId = (String)request.getAttribute("instructorId");
-				String duration = (String)request.getAttribute("duration");
+				String name = request.getParameter("name");
+				String nameOld = request.getParameter("nameOld"); // Save P.K for future use
+				String instructorId = request.getParameter("instructorId");
+				String duration = request.getParameter("duration");
 				
 				//add to db this fields
-                PreparedStatement prepstate = connection.prepareStatement (
-                		" UPDATE site "
-                		+" SET name=?, instructorId=?, duration=?"
-                		+" WHERE name=?"
-                			);
+                PreparedStatement prepstate = connection.prepareStatement ("UPDATE site SET name=?, instructorId=?, duration=? WHERE name=?" );
                 prepstate.setString(1, name);
                 prepstate.setString(2, instructorId);
                 prepstate.setString(3, duration);
                 prepstate.setString(4, nameOld);
-                ResultSet rs = prepstate.executeQuery();
+                prepstate.executeUpdate();
+
+                RequestDispatcher dispatcher = getServletContext()
+						.getRequestDispatcher("/views/success.jsp");
+				dispatcher.forward(request, response);
 		    }    
 		    
 		    
@@ -405,14 +397,24 @@ public class Controller extends HttpServlet {
 			else if(str.equals("/deleteSite")){
 				// TODO Auto-generated catch block
 		    }
-	
+
+	    	
+	    	
+////---------About-----------------------------------------------------
 			else if (str.equals("/about")){
 				RequestDispatcher dispatcher = getServletContext()
 						.getRequestDispatcher("/views/about.jsp");
 				dispatcher.forward(request, response);
 			}
+			else if (str.equals("/contact")){
+				RequestDispatcher dispatcher = getServletContext()
+						.getRequestDispatcher("/views/contact.jsp");
+				dispatcher.forward(request, response);
+			}
 		    
-		    
+	
+	    	
+////---------Drop All-----------------------------------------------------
 			else if(str.equals("/dropAll")){
 				Statement statement = connection.createStatement();
 				statement.execute("DROP TABLE trip");
@@ -424,15 +426,17 @@ public class Controller extends HttpServlet {
 				System.out.println("drop all completed.");
 			}
 		    
-		    
-		    //---------------------------------------------------------------
-
+	
+	    	
+	    	
+////---------index--------------------------------------------------------
 			else{
 				RequestDispatcher dispatcher = getServletContext()
 						.getRequestDispatcher("/views/index.jsp");
 				dispatcher.forward(request, response);
 			}
-	    	
+
+////---------Error page----------------------------------------------------
 		}catch (Exception  e) {
 			// TODO Auto-generated catch block
 			RequestDispatcher dispatcher = getServletContext()

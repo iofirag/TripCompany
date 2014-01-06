@@ -19,6 +19,8 @@ int numOfTravelers = (Integer)request.getAttribute("numOfTravelers");
 
 %>
 
+<h1>Update Trip:</h1><br><br>
+
 <form action="../controller/updateTripAfterPreview" method="get">
 <input type="hidden" name="tripId" value="<% out.print(tripId); %>">
 Trip name: <input type="text" name="name" value="<% out.print(name); %>"><br>

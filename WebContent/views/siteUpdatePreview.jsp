@@ -15,6 +15,7 @@ String instructorId = (String)request.getAttribute("instructorId");
 String duration = (String)request.getAttribute("duration");
 
 %>
+<h1>Update Site:</h1><br><br>
 
 <form action="../controller/updateSiteAfterPreview" method="get">
 	<input type="hidden" name="nameOld" value="<% out.print(nameOld); %>">
