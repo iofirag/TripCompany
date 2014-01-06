@@ -9,16 +9,20 @@
 <body>
 <%
 
-String name = (String)request.getAttribute("name");
 String instructorId = (String)request.getAttribute("instructorId");
-String duration = (String)request.getAttribute("duration");
+String instuctorIdOld = instructorId; // Save P.k for future
+String name = (String)request.getAttribute("name");
+String lastName = (String)request.getAttribute("lastName");
+String address = (String)request.getAttribute("address");
 
 %>
 
 	<form action="../controller/updateInstructorAfterPreview" method="get">
-		Name: <input type="text" name="name" value="<% out.print(name); %>"><br>
+		<input type="hidden" name="instuctorIdOld" value="<% out.print(instuctorIdOld); %>">
 		Instructor ID: <input type="text" name="instructorId" value="<% out.print(instructorId); %>"><br>
-		Duration: <input type="text" name="lastName" value="<% out.print(duration); %>"><br>
+		Name: <input type="text" name="name" value="<% out.print(name); %>"><br>
+		Last Name: <input type="text" name="lastName" value="<% out.print(lastName); %>"><br>
+		Address: <input type="text" name="address" value="<% out.print(address); %>"><br>
 		<input type="submit" value="Update">
 	</form>
 </body>

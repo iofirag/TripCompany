@@ -9,8 +9,8 @@
 <body>
 <%
 
-int id = (Integer)request.getAttribute("id");
-String tripName = (String)request.getAttribute("tripName");
+int tripId = (Integer)request.getAttribute("tripId");
+String name = (String)request.getAttribute("name");
 String startDate = (String)request.getAttribute("startDate");
 String endDate = (String)request.getAttribute("endDate");
 double ratePerTraveler = (Double)request.getAttribute("ratePerTraveler");
@@ -20,8 +20,8 @@ int numOfTravelers = (Integer)request.getAttribute("numOfTravelers");
 %>
 
 <form action="../controller/updateTripAfterPreview" method="get">
-<input type="hidden" name="id" value="<% out.print(id); %>">
-Trip name: <input type="text" name="tripName" value="<% out.print(tripName); %>"><br>
+<input type="hidden" name="tripId" value="<% out.print(tripId); %>">
+Trip name: <input type="text" name="name" value="<% out.print(name); %>"><br>
 Start date: <input type="text" name="startDate" value="<% out.print(startDate); %>"><br>
 End date: <input type="text" name="endDate" value="<% out.print(endDate); %>"><br>
 Rate per traveler: <input type="text" name="ratePerTraveler" value="<% out.print(ratePerTraveler); %>"><br>

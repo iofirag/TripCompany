@@ -9,24 +9,19 @@
 <body>
 <%
 
-/* int id = (Integer)request.getAttribute("id");
-String tripName = (String)request.getAttribute("tripName");
-String startDate = (String)request.getAttribute("startDate");
-String endDate = (String)request.getAttribute("endDate");
-double ratePerTraveler = (Double)request.getAttribute("ratePerTraveler");
-int numOfTravelers = (Integer)request.getAttribute("numOfTravelers"); */
-
+String name = (String)request.getAttribute("name");
+String nameOld = name; // Save P.K for future use
+String instructorId = (String)request.getAttribute("instructorId");
+String duration = (String)request.getAttribute("duration");
 
 %>
 
-<%-- <form action="../controller/updateTripAfterPreview" method="get">
-<input type="hidden" name="id" value="<% out.print(id); %>">
-Trip name: <input type="text" name="tripName" value="<% out.print(tripName); %>"><br>
-Start date: <input type="text" name="startDate" value="<% out.print(startDate); %>"><br>
-End date: <input type="text" name="endDate" value="<% out.print(endDate); %>"><br>
-Rate per traveler: <input type="text" name="ratePerTraveler" value="<% out.print(ratePerTraveler); %>"><br>
-num Of Travelers:<input type="text" name="numOfTravelers" value="<% out.print(numOfTravelers); %>"><br>
-<input type="submit" value="Update">
-</form> --%>
+<form action="../controller/updateSiteAfterPreview" method="get">
+	<input type="hidden" name="nameOld" value="<% out.print(nameOld); %>">
+	Site name: <input type="text" name="name" value="<% out.print(name); %>"><br>
+	Instructor ID: <input type="text" name="instructorId" value="<% out.print(instructorId); %>"><br>
+	Duration: <input type="text" name="duration" value="<% out.print(duration); %>"><br>
+	<input type="submit" value="Update">
+</form>
 </body>
 </html>

@@ -148,7 +148,7 @@ public class Controller extends HttpServlet {
 				prepstate.setDouble(5, Double.parseDouble(ratePerTraveler));
 				prepstate.execute();
 				prepstate.close();
-					
+				
 				RequestDispatcher dispatcher = getServletContext()
 						.getRequestDispatcher("/views/index.jsp");
 				dispatcher.forward(request, response);	
@@ -197,17 +197,18 @@ public class Controller extends HttpServlet {
 	    	
 	    	
 ////---------preview (before update)----------------------------------------------------- 
+	    	//Working!
 			else if (str.equals("/tripUpdatePreview")){
                 //Select in database the trip with the name passed to the controller
                 //then pass the trip details to jsp preview form
 				String tripUpdateName= request.getParameter("tripUpdateName");
 				// Trip fields
-				String tripName = null;
+				String name = null;
                 String startDate= null;
                 String endDate= null;
                 double ratePerTraveler = 0;
                 int numOfTravelers = 0;
-                int id=0;
+                int tripId=0;
                 try {
 	                	PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM trip WHERE name=?");
 	                    prepstate.setString(1, tripUpdateName);
@@ -215,8 +216,8 @@ public class Controller extends HttpServlet {
 	                    while (rs.next())
 	                    {
 	                    	if(rs.getString("name").equals(tripUpdateName)){
-	                            id=        rs.getInt("tripId");
-	                            tripName = rs.getString("name");
+	                            tripId=        rs.getInt("tripId");
+	                            name = rs.getString("name");
 	                            startDate = rs.getString("startDate");
 	                            endDate = rs.getString("endDate");
 	                            ratePerTraveler = rs.getDouble("ratePerTraveler");
@@ -224,8 +225,8 @@ public class Controller extends HttpServlet {
 	                            break;
 	                    	}
 	                    }
-	                    request.setAttribute("id", id);
-	                    request.setAttribute("tripName", tripName);
+	                    request.setAttribute("tripId", tripId);
+	                    request.setAttribute("name", name);
 	                    request.setAttribute("startDate", startDate);
 	                    request.setAttribute("endDate", endDate);
 	                    request.setAttribute("ratePerTraveler", ratePerTraveler);
@@ -240,7 +241,8 @@ public class Controller extends HttpServlet {
                                 .getRequestDispatcher("/views/tripUpdatePreview.jsp");
                 dispatcher.forward(request, response);        
 			}
-
+	    	
+	    	//Working!
 			else if(str.equals("/instructorUpdatePreview")){
 				String instructorUpdateId= request.getParameter("instructorUpdateId");
 				// instructor fields
@@ -277,6 +279,7 @@ public class Controller extends HttpServlet {
                 dispatcher.forward(request, response);   
 			}
 	    	
+	    	//Working
 			else if(str.equals("/siteUpdatePreview")){
 				String siteUpdateName= request.getParameter("siteUpdateName");
 				// Site fields
@@ -306,25 +309,89 @@ public class Controller extends HttpServlet {
                 }
                 
                 RequestDispatcher dispatcher = getServletContext()
-                                .getRequestDispatcher("/views/instructorUpdatePreview.jsp");
+                                .getRequestDispatcher("/views/siteUpdatePreview.jsp");
                 dispatcher.forward(request, response); 
 		    }
 	    	
 	    	
 		    
-////------------Update-------------------------------------------------- 
+////------------Update-After Preview------------------------------------------------- 
+	    	//----------------------------------------------------------------
+	    	// Example:														//
+	    	//UPDATE tablename												//
+            //SET (col1, col2, ..., colN) = ('val1', 'val2', ..., 'valN')	//
+            //WHERE id = id_value											//
+            //--or--														//
+            //UPDATE tablename												//
+            //SET col1 = 'val1', col2 = 'val2' ...							//
+            //WHERE id = id_value											//
+	    	//----------------------------------------------------------------
+	    	
 			else if(str.equals("/updateTripAfterPreview")){
-				
+				// Trip fields
+				int tripId= Integer.parseInt( request.getParameter("tripId") ); // P.k
+				String name = request.getParameter("name");
+                String startDate= request.getParameter("startDate");
+                String endDate= request.getParameter("endDate");
+                int numOfTravelers = Integer.parseInt( request.getParameter("numOfTravelers") );
+                double ratePerTraveler = Double.parseDouble( request.getParameter("ratePerTraveler")  );
+                
+                //add to db this fields
+                PreparedStatement prepstate = connection.prepareStatement (
+                		" UPDATE trip "
+                		+" SET name=?, startDate=?, endDate=?, numOfTravelers=?, ratePerTraveler=? "
+                		+" WHERE tripId=?"
+                			);
+                prepstate.setString(1, name);
+                prepstate.setString(2, startDate);
+                prepstate.setString(3, endDate);
+                prepstate.setInt(4, numOfTravelers);
+                prepstate.setDouble(5, ratePerTraveler);
+                prepstate.setInt(6, tripId);
+                ResultSet rs = prepstate.executeQuery();
 		    }
+	    	
 			else if(str.equals("/updateInstructorAfterPreview")){
-				// TODO Auto-generated catch block	
+				// Instructor fields
+				String instructorId = (String)request.getAttribute("instructorId");
+				String instuctorIdOld = instructorId; // Save P.k for future
+				String name = (String)request.getAttribute("name");
+				String lastName = (String)request.getAttribute("lastName");
+				String address = (String)request.getAttribute("address");
+				
+				//add to db this fields
+                PreparedStatement prepstate = connection.prepareStatement (
+                		" UPDATE instructor "
+                		+" SET instructorId=?, name=?, lastName=?, address=? "
+                		+" WHERE instructorId=?"
+                			);
+                prepstate.setString(1, instructorId);
+                prepstate.setString(2, name);
+                prepstate.setString(3, lastName);
+                prepstate.setString(4, address);
+                prepstate.setString(5, instuctorIdOld);
+                ResultSet rs = prepstate.executeQuery();
 			}
+	    	
 			else if(str.equals("/updateSiteAfterPreview")){
-				// TODO Auto-generated catch block
-		    }
-	
-		    
-		    
+				// Site fields
+				String name = (String)request.getAttribute("name");
+				String nameOld = name; // Save P.K for future use
+				String instructorId = (String)request.getAttribute("instructorId");
+				String duration = (String)request.getAttribute("duration");
+				
+				//add to db this fields
+                PreparedStatement prepstate = connection.prepareStatement (
+                		" UPDATE site "
+                		+" SET name=?, instructorId=?, duration=?"
+                		+" WHERE name=?"
+                			);
+                prepstate.setString(1, name);
+                prepstate.setString(2, instructorId);
+                prepstate.setString(3, duration);
+                prepstate.setString(4, nameOld);
+                ResultSet rs = prepstate.executeQuery();
+		    }    
 		    
 		    
 		    
@@ -366,11 +433,11 @@ public class Controller extends HttpServlet {
 				dispatcher.forward(request, response);
 			}
 	    	
-		} catch (SQLException  e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}catch (Exception  e) {
 			// TODO Auto-generated catch block
+			RequestDispatcher dispatcher = getServletContext()
+					.getRequestDispatcher("/views/showError.jsp");
+			dispatcher.forward(request, response);
 			e.printStackTrace();
 		}
 	}
