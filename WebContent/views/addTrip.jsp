@@ -7,13 +7,14 @@
 <title>Add Trip</title>
 </head>
 <body>
-	<form action="../controller/addTrip" method="get">
-		Trip name: <input type="text" name="tripName"><br>
-		Start date: <input type="text" name="startDate"><br>
-		End date: <input type="text" name="endDate"><br>
-		Rate per traveler: <input type="text" name="ratePerTraveler"><br>
-		num Of Travelers:<input type="text" name="numOfTravelers"><br>
-		<input type="submit" value="Submit">
-	</form>
+<h1>Add Trip:</h1><br><br>
+        <form action="../controller/addTrip" method="get">
+			Trip name: <input type="text" name="tripName"><br>
+			Start date: <input type="text" name="startDate"><br>
+			End date: <input type="text" name="endDate"><br>
+			Rate per traveler: <input type="text" name="ratePerTraveler"><br>
+			Number Of Travelers:<input type="text" name="numOfTravelers"><br>
+			<input type="submit" value="Submit">
+        </form>
 </body>
 </html>
