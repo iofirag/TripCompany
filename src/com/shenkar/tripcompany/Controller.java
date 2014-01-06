@@ -1,6 +1,7 @@
 package com.shenkar.tripcompany;
 
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -42,7 +43,7 @@ public class Controller extends HttpServlet {
 	String createSiteTable = "CREATE TABLE site ("
 	        +"        name VARCHAR(30) NOT NULL PRIMARY KEY, "
 	        +"        instructorId VARCHAR(30), "
-	        +"        duration VARCHAR(5) "
+	        +"        duration VARCHAR(30) "
 	        +"        )";
 	String createTravelerTable = "CREATE TABLE traveler ("
 	        +"        travelerId VARCHAR(30) NOT NULL PRIMARY KEY, "
@@ -91,29 +92,26 @@ public class Controller extends HttpServlet {
         System.out.println("controller constructor");
         System.out.println("db="+db);
         try{
-        	if (db==false){
-	    		System.out.println("create tables");
-	    		
-		        //Create tables
+			System.out.println("create tables");
+			
+	        //Create tables
 	
-				Class.forName("com.mysql.jdbc.Driver");
-				connection = DriverManager.getConnection("jdbc:mysql://localhost/tripcompany", "jaja", "gaga");
-	        	Statement statement = connection.createStatement();
-	              
-	            //executing statements the create the main tables
-				statement.executeUpdate(createTripTable);
-				statement.executeUpdate(createInstructorTable);
-	            statement.executeUpdate(createSiteTable);
-	            statement.executeUpdate(createTravelerTable);
-	            statement.executeUpdate(createManagerTable);
-	            statement.close();
-	            
-	            //executing a procedure code
-	            //statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
-	            //statement.executeUpdate(tripsCheaperThenProcdure);
-	            //statement.executeUpdate(initTrigerBeforeDelete);
-	            db=true;		
-        	}
+			Class.forName("com.mysql.jdbc.Driver");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/tripcompany", "jaja", "gaga");
+	    	Statement statement = connection.createStatement();
+	          
+	        //executing statements the create the main tables
+			statement.executeUpdate(createTripTable);
+			statement.executeUpdate(createInstructorTable);
+	        statement.executeUpdate(createSiteTable);
+	        statement.executeUpdate(createTravelerTable);
+	        statement.executeUpdate(createManagerTable);
+	        
+	        //executing a procedure code
+	        statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
+	        statement.executeUpdate(tripsCheaperThenProcdure);
+	        		System.out.println("tripsCheaperThenProcdure");
+	        //statement.executeUpdate(initTrigerBeforeDelete);	
         }catch(Exception e){
         	e.printStackTrace();
         }
@@ -398,6 +396,33 @@ public class Controller extends HttpServlet {
 				// TODO Auto-generated catch block
 		    }
 
+	    	
+	    	
+////---------Procedure----------------------------------------------------- 
+	    	//WORKING!
+            //A procedure that print all trips that cost less then
+            //the price that the user chose.
+            else if (str.equals("/procedureExample")){
+                    String tripPrice = request.getParameter("tripPrice");
+                    float price = Float.parseFloat(tripPrice);
+                    CallableStatement cs;
+                    ResultSet rs = null;
+                    try {
+	                        cs = connection.prepareCall("(call getTripsCheaperThen(?))");
+	                        cs.setFloat(1, price);
+	                        rs = cs.executeQuery();
+                    } catch (SQLException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                    }
+                    request.setAttribute("ResultSet", rs);
+                    
+                    RequestDispatcher dispatcher = getServletContext()
+                                    .getRequestDispatcher("/views/procedureOutcome.jsp");
+                    dispatcher.forward(request, response);        
+            }
+	    	
+	    	
 	    	
 	    	
 ////---------About-----------------------------------------------------

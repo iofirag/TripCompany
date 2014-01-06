@@ -273,23 +273,6 @@ public class ControllerVid extends HttpServlet {
                         dispatcher.forward(request, response);        
                 }
                 
-                else if(str.equals("/dropAll")){
-    				Statement statement;
-					try {
-						statement = connection.createStatement();
-					
-    				statement.execute("DROP TABLE trip");
-    				statement.execute("DROP TABLE traveler");
-    				statement.execute("DROP TABLE site");
-    				statement.execute("DROP TABLE manager");
-    				statement.execute("DROP TABLE instructor");
-    						System.out.println("drop all completed.");
-    				} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-    				
-    			}
                 
                 else{
                         RequestDispatcher dispatcher = getServletContext()
