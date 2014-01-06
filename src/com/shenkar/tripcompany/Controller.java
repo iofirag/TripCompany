@@ -1,10 +1,7 @@
 package com.shenkar.tripcompany;
 
 import java.io.IOException;
-<<<<<<< HEAD
 import java.sql.CallableStatement;
-=======
->>>>>>> 273beda83cc70b79c64de43bddd21d43dbbc537d
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -101,11 +98,7 @@ public class Controller extends HttpServlet {
 		        //Create tables
 	
 				Class.forName("com.mysql.jdbc.Driver");
-<<<<<<< HEAD
 				connection = DriverManager.getConnection("jdbc:mysql://localhost/test", "jaja", "gaga");
-=======
-				connection = DriverManager.getConnection("jdbc:mysql://localhost/tripcompany", "jaja", "gaga");
->>>>>>> 273beda83cc70b79c64de43bddd21d43dbbc537d
 	        	Statement statement = connection.createStatement();
 	              
 	            //executing statements the create the main tables
@@ -147,11 +140,7 @@ public class Controller extends HttpServlet {
 				String ratePerTraveler= request.getParameter("ratePerTraveler");
 				String numOfTravelers= request.getParameter("numOfTravelers");
 				PreparedStatement prepstate = connection.prepareStatement
-<<<<<<< HEAD
 				("INSERT INTO trip (`name`, `startDate`, `endDate`, `numOfTravelers`, `ratePerTraveler`) "
-=======
-				("INSERT INTO `tripCompany`.`trip` (`name`, `startDate`, `endDate`, `numOfTravelers`, `ratePerTraveler`) "
->>>>>>> 273beda83cc70b79c64de43bddd21d43dbbc537d
 						+ "VALUES (?, ?, ?, ?, ?)");
 				prepstate.setString(1, tripName);
 				prepstate.setString(2, startDate);
@@ -172,11 +161,7 @@ public class Controller extends HttpServlet {
 				String lastName= request.getParameter("lastName");
 				String address= request.getParameter("address");
 				PreparedStatement prepstate = connection.prepareStatement
-<<<<<<< HEAD
 				("INSERT INTO instructor (`instructorId`, `name`, `lastName`, `address`) "
-=======
-				("INSERT INTO `tripCompany`.`instructor` (`instructorId`, `name`, `lastName`, `address`) "
->>>>>>> 273beda83cc70b79c64de43bddd21d43dbbc537d
 						+ "VALUES (?, ?, ?, ?)");
 				prepstate.setString(1, instructorId);
 				prepstate.setString(2, firstName);
@@ -196,11 +181,7 @@ public class Controller extends HttpServlet {
 				// optional: check if instuctor-id exist in `tripcompany.instructor` table
 				String duration= request.getParameter("duration");
 				PreparedStatement prepstate = connection.prepareStatement
-<<<<<<< HEAD
 				("INSERT INTO site (`name`, `instructorId`, `duration`) "
-=======
-				("INSERT INTO `tripCompany`.`site` (`name`, `instructorId`, `duration`) "
->>>>>>> 273beda83cc70b79c64de43bddd21d43dbbc537d
 						+ "VALUES (?, ?, ?)");
 				prepstate.setString(1, siteName);
 				prepstate.setString(2, instructorId);
@@ -212,13 +193,7 @@ public class Controller extends HttpServlet {
 						.getRequestDispatcher("/views/index.jsp");
 				dispatcher.forward(request, response);		
 			}
-<<<<<<< HEAD
 		    	    	
-=======
-		    
-
-	    	
->>>>>>> 273beda83cc70b79c64de43bddd21d43dbbc537d
 	    	
 ////---------preview (before update)----------------------------------------------------- 
 	    	//Working!
@@ -412,7 +387,6 @@ public class Controller extends HttpServlet {
 		    
 		    
 ////---------Delete----------------------------------------------------- 
-<<<<<<< HEAD
 	    	//Working!
 			else if(str.equals("/deleteTrip")){
                 String TripNameToDelete= request.getParameter("tripDeleteName");
@@ -486,17 +460,6 @@ public class Controller extends HttpServlet {
 						.getRequestDispatcher("/views/procedureOutcome.jsp");
 				dispatcher.forward(request, response);	
 			}
-=======
-			else if(str.equals("/deleteTrip")){
-				// TODO Auto-generated catch block
-		    }
-			else if(str.equals("/deleteInstructor")){
-				// TODO Auto-generated catch block 	
-			}
-			else if(str.equals("/deleteSite")){
-				// TODO Auto-generated catch block
-		    }
->>>>>>> 273beda83cc70b79c64de43bddd21d43dbbc537d
 
 	    	
 	    	
