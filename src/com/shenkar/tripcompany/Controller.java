@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-	Boolean db=false;
 	Connection connection = null;
 	
 	String createTripTable = "CREATE TABLE trip ("
@@ -90,12 +89,9 @@ public class Controller extends HttpServlet {
     public Controller() {
         super();
         System.out.println("controller constructor");
-        System.out.println("db="+db);
+        
         try{
-			System.out.println("create tables");
-			
 	        //Create tables
-	
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://localhost/tripcompany", "jaja", "gaga");
 	    	Statement statement = connection.createStatement();
@@ -106,12 +102,13 @@ public class Controller extends HttpServlet {
 	        statement.executeUpdate(createSiteTable);
 	        statement.executeUpdate(createTravelerTable);
 	        statement.executeUpdate(createManagerTable);
+	        							System.out.println("create tables");
 	        
 	        //executing a procedure code
-	        statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
-	        statement.executeUpdate(tripsCheaperThenProcdure);
-	        		System.out.println("tripsCheaperThenProcdure");
-	        //statement.executeUpdate(initTrigerBeforeDelete);	
+	        //statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
+	        //statement.executeUpdate(tripsCheaperThenProcdure);
+	        //							System.out.println("tripsCheaperThenProcdure");
+	        //statement.executeUpdate(initTrigerBeforeDelete);
         }catch(Exception e){
         	e.printStackTrace();
         }
@@ -137,7 +134,7 @@ public class Controller extends HttpServlet {
 				String ratePerTraveler= request.getParameter("ratePerTraveler");
 				String numOfTravelers= request.getParameter("numOfTravelers");
 				PreparedStatement prepstate = connection.prepareStatement
-				("INSERT INTO `tripCompany`.`trip` (`name`, `startDate`, `endDate`, `numOfTravelers`, `ratePerTraveler`) "
+				("INSERT INTO trip (`name`, `startDate`, `endDate`, `numOfTravelers`, `ratePerTraveler`) "
 						+ "VALUES (?, ?, ?, ?, ?)");
 				prepstate.setString(1, tripName);
 				prepstate.setString(2, startDate);
@@ -148,7 +145,7 @@ public class Controller extends HttpServlet {
 				prepstate.close();
 				
 				RequestDispatcher dispatcher = getServletContext()
-						.getRequestDispatcher("/views/index.jsp");
+						.getRequestDispatcher("/views/success.jsp");
 				dispatcher.forward(request, response);	
 		    }
 	    	//working!
@@ -158,7 +155,7 @@ public class Controller extends HttpServlet {
 				String lastName= request.getParameter("lastName");
 				String address= request.getParameter("address");
 				PreparedStatement prepstate = connection.prepareStatement
-				("INSERT INTO `tripCompany`.`instructor` (`instructorId`, `name`, `lastName`, `address`) "
+				("INSERT INTO instructor (`instructorId`, `name`, `lastName`, `address`) "
 						+ "VALUES (?, ?, ?, ?)");
 				prepstate.setString(1, instructorId);
 				prepstate.setString(2, firstName);
@@ -168,7 +165,7 @@ public class Controller extends HttpServlet {
 				prepstate.close();
 				
 				RequestDispatcher dispatcher = getServletContext()
-						.getRequestDispatcher("/views/index.jsp");
+						.getRequestDispatcher("/views/success.jsp");
 				dispatcher.forward(request, response);
 		    }
 	    	//working!
@@ -178,7 +175,7 @@ public class Controller extends HttpServlet {
 				// optional: check if instuctor-id exist in `tripcompany.instructor` table
 				String duration= request.getParameter("duration");
 				PreparedStatement prepstate = connection.prepareStatement
-				("INSERT INTO `tripCompany`.`site` (`name`, `instructorId`, `duration`) "
+				("INSERT INTO site (`name`, `instructorId`, `duration`) "
 						+ "VALUES (?, ?, ?)");
 				prepstate.setString(1, siteName);
 				prepstate.setString(2, instructorId);
@@ -187,12 +184,10 @@ public class Controller extends HttpServlet {
 				prepstate.close();
 				
 				RequestDispatcher dispatcher = getServletContext()
-						.getRequestDispatcher("/views/index.jsp");
+						.getRequestDispatcher("/views/success.jsp");
 				dispatcher.forward(request, response);		
 			}
-		    
-
-	    	
+		    	    	
 	    	
 ////---------preview (before update)----------------------------------------------------- 
 	    	//Working!
@@ -211,7 +206,8 @@ public class Controller extends HttpServlet {
 	                	PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM trip WHERE name=?");
 	                    prepstate.setString(1, tripUpdateName);
 	                    ResultSet rs = prepstate.executeQuery();
-	                    while (rs.next())
+	                    boolean found = false;
+	                    while (rs.next() && found==false)
 	                    {
 	                    	if(rs.getString("name").equals(tripUpdateName)){
 	                            tripId=        rs.getInt("tripId");
@@ -220,24 +216,35 @@ public class Controller extends HttpServlet {
 	                            endDate = rs.getString("endDate");
 	                            ratePerTraveler = rs.getDouble("ratePerTraveler");
 	                            numOfTravelers = rs.getInt("numOfTravelers"); 
-	                            break;
+	                            found=true;
 	                    	}
 	                    }
-	                    request.setAttribute("tripId", tripId);
-	                    request.setAttribute("name", name);
-	                    request.setAttribute("startDate", startDate);
-	                    request.setAttribute("endDate", endDate);
-	                    request.setAttribute("ratePerTraveler", ratePerTraveler);
-	                    request.setAttribute("numOfTravelers", numOfTravelers);
+	                    if (found==false){
+	                    	RequestDispatcher dispatcher = getServletContext()
+	                                .getRequestDispatcher("/views/faild.jsp");
+	                    	dispatcher.forward(request, response);    
+	                    }else{
+		                    request.setAttribute("tripId", tripId);
+		                    request.setAttribute("name", name);
+		                    request.setAttribute("startDate", startDate);
+		                    request.setAttribute("endDate", endDate);
+		                    request.setAttribute("ratePerTraveler", ratePerTraveler);
+		                    request.setAttribute("numOfTravelers", numOfTravelers);
+		                    
+		                    RequestDispatcher dispatcher = getServletContext()
+	                                .getRequestDispatcher("/views/tripUpdatePreview.jsp");
+		                    dispatcher.forward(request, response);    
+	                    }
                         
                 } catch (SQLException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
                 
-                RequestDispatcher dispatcher = getServletContext()
-                                .getRequestDispatcher("/views/tripUpdatePreview.jsp");
-                dispatcher.forward(request, response);        
+                    
 			}
 	    	
 	    	//Working!
@@ -252,29 +259,38 @@ public class Controller extends HttpServlet {
                 		PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM instructor WHERE instructorId=?");
                         prepstate.setString(1, instructorUpdateId);
                         ResultSet rs = prepstate.executeQuery();
-                        while (rs.next())
+                        boolean found = false;
+	                    while (rs.next() && found==false)
                         {
                         	if(rs.getString("instructorId").equals(instructorUpdateId)){
                         		instructorId = rs.getString("instructorId");
                         		name = rs.getString("name");
                         		lastName = rs.getString("lastName");
                         		address = rs.getString("address");
-                        		break;
-                        	}
-                        }
-                        request.setAttribute("instructorId", instructorId);
-                        request.setAttribute("name", name);
-                        request.setAttribute("lastName", lastName);
-                        request.setAttribute("address", address);
-                        
+                        		found=true;
+	                    	}
+	                    }
+	                    if (found==false){
+	                    	RequestDispatcher dispatcher = getServletContext()
+	                                .getRequestDispatcher("/views/faild.jsp");
+	                    	dispatcher.forward(request, response);    
+	                    }else{
+	                        request.setAttribute("instructorId", instructorId);
+	                        request.setAttribute("name", name);
+	                        request.setAttribute("lastName", lastName);
+	                        request.setAttribute("address", address);
+                
+			                RequestDispatcher dispatcher = getServletContext()
+			                                .getRequestDispatcher("/views/instructorUpdatePreview.jsp");
+			                dispatcher.forward(request, response);   
+	                    }  
                 } catch (SQLException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-                
-                RequestDispatcher dispatcher = getServletContext()
-                                .getRequestDispatcher("/views/instructorUpdatePreview.jsp");
-                dispatcher.forward(request, response);   
 			}
 	    	
 	    	//Working
@@ -288,27 +304,37 @@ public class Controller extends HttpServlet {
                 		PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM site WHERE name=?");
                         prepstate.setString(1, siteUpdateName);
                         ResultSet rs = prepstate.executeQuery();
-                        while (rs.next())
+                        boolean found = false;
+	                    while (rs.next() && found==false)
                         {
                         	if(rs.getString("name").equals(siteUpdateName)){
                         		name = rs.getString("name");
                         		instructorId = rs.getString("instructorId");
                         		duration = rs.getString("duration");
-                        		break;
-                        	}
-                        }
-                        request.setAttribute("name", name);
-                        request.setAttribute("instructorId", instructorId);
-                        request.setAttribute("duration", duration);
+                        		found=true;
+	                    	}
+	                    }
+	                    if (found==false){
+	                    	RequestDispatcher dispatcher = getServletContext()
+	                                .getRequestDispatcher("/views/faild.jsp");
+	                    	dispatcher.forward(request, response);    
+	                    }else{
+	                        request.setAttribute("name", name);
+	                        request.setAttribute("instructorId", instructorId);
+	                        request.setAttribute("duration", duration);
+	                        
+			                RequestDispatcher dispatcher = getServletContext()
+			                                .getRequestDispatcher("/views/siteUpdatePreview.jsp");
+			                dispatcher.forward(request, response); 
+	                    }
                         
                 } catch (SQLException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-                
-                RequestDispatcher dispatcher = getServletContext()
-                                .getRequestDispatcher("/views/siteUpdatePreview.jsp");
-                dispatcher.forward(request, response); 
 		    }
 	    	
 	    	
@@ -386,15 +412,79 @@ public class Controller extends HttpServlet {
 		    
 		    
 ////---------Delete----------------------------------------------------- 
+	    	//Working!
 			else if(str.equals("/deleteTrip")){
-				// TODO Auto-generated catch block
-		    }
+                String TripNameToDelete= request.getParameter("tripDeleteName");
+                PreparedStatement prepstate = null;
+                try {
+                        prepstate = connection.prepareStatement
+                        ("DELETE FROM `trip` WHERE name=?");
+                        prepstate.setString(1, TripNameToDelete);
+                        prepstate.execute();
+                } catch (SQLException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                }
+		        RequestDispatcher dispatcher = getServletContext()
+		                        .getRequestDispatcher("/views/index.jsp");
+		        dispatcher.forward(request, response);                        
+				}
+	    	
+	    	//Working!
 			else if(str.equals("/deleteInstructor")){
-				// TODO Auto-generated catch block 	
-			}
+                String instructorIdToDelete= request.getParameter("instructorDeleteId");
+                PreparedStatement prepstate = null;
+                try {
+                        prepstate = connection.prepareStatement
+                        ("DELETE FROM `instructor` WHERE instructorId=?");
+                        prepstate.setString(1, instructorIdToDelete);
+                        prepstate.execute();
+                } catch (SQLException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                }
+		        RequestDispatcher dispatcher = getServletContext()
+		                        .getRequestDispatcher("/views/index.jsp");
+		        dispatcher.forward(request, response);                        
+				}
+		
 			else if(str.equals("/deleteSite")){
-				// TODO Auto-generated catch block
-		    }
+                String siteNameToDelete= request.getParameter("siteDeleteName");
+                PreparedStatement prepstate = null;
+                try {
+                        prepstate = connection.prepareStatement
+                        ("DELETE FROM `site` WHERE name=?");
+                        prepstate.setString(1, siteNameToDelete);
+                        prepstate.execute();
+                } catch (SQLException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                }
+		        RequestDispatcher dispatcher = getServletContext()
+		                        .getRequestDispatcher("/views/index.jsp");
+		        dispatcher.forward(request, response);                        
+				}
+			
+///-----------Procedures----------------------------------------------------
+			else if (str.equals("/procedureExample")){
+				String tripPrice = request.getParameter("tripPrice");
+				float price = Float.parseFloat(tripPrice);
+				CallableStatement cs;
+				ResultSet rs = null;
+				try {
+					cs = connection.prepareCall("CALL getTripsCheaperThen(?)");
+					cs.setFloat(1, price);
+				    rs = cs.executeQuery();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				request.setAttribute("ResultSet", rs);
+				
+				RequestDispatcher dispatcher = getServletContext()
+						.getRequestDispatcher("/views/procedureOutcome.jsp");
+				dispatcher.forward(request, response);	
+			}
 
 	    	
 	    	
@@ -447,8 +537,13 @@ public class Controller extends HttpServlet {
 				statement.execute("DROP TABLE site");
 				statement.execute("DROP TABLE manager");
 				statement.execute("DROP TABLE instructor");
+				statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
 				statement.close();
 				System.out.println("drop all completed.");
+				
+				RequestDispatcher dispatcher = getServletContext()
+                        .getRequestDispatcher("/views/success.jsp");
+        dispatcher.forward(request, response);    
 			}
 		    
 	

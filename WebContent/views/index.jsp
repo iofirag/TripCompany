@@ -75,7 +75,7 @@
 				  <br>
 				  
 				<form action="../controller/deleteInstructor" method="get">
-				    Instructor name to delete: <input type="Text" name="instructorDeleteName">
+				    Instructor ID to delete: <input type="Text" name="instructorDeleteId">
 				    <!-- submit-button delete trip -->
 				    <button type="submit" class="btn btn-success">Delete Instructor</button>
 				</form>
