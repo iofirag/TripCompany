@@ -1,6 +1,7 @@
 package com.shenkar.tripcompany;
 
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -97,7 +98,7 @@ public class Controller extends HttpServlet {
 		        //Create tables
 	
 				Class.forName("com.mysql.jdbc.Driver");
-				connection = DriverManager.getConnection("jdbc:mysql://localhost/tripcompany", "jaja", "gaga");
+				connection = DriverManager.getConnection("jdbc:mysql://localhost/test", "jaja", "gaga");
 	        	Statement statement = connection.createStatement();
 	              
 	            //executing statements the create the main tables
@@ -139,7 +140,7 @@ public class Controller extends HttpServlet {
 				String ratePerTraveler= request.getParameter("ratePerTraveler");
 				String numOfTravelers= request.getParameter("numOfTravelers");
 				PreparedStatement prepstate = connection.prepareStatement
-				("INSERT INTO `tripCompany`.`trip` (`name`, `startDate`, `endDate`, `numOfTravelers`, `ratePerTraveler`) "
+				("INSERT INTO trip (`name`, `startDate`, `endDate`, `numOfTravelers`, `ratePerTraveler`) "
 						+ "VALUES (?, ?, ?, ?, ?)");
 				prepstate.setString(1, tripName);
 				prepstate.setString(2, startDate);
@@ -160,7 +161,7 @@ public class Controller extends HttpServlet {
 				String lastName= request.getParameter("lastName");
 				String address= request.getParameter("address");
 				PreparedStatement prepstate = connection.prepareStatement
-				("INSERT INTO `tripCompany`.`instructor` (`instructorId`, `name`, `lastName`, `address`) "
+				("INSERT INTO instructor (`instructorId`, `name`, `lastName`, `address`) "
 						+ "VALUES (?, ?, ?, ?)");
 				prepstate.setString(1, instructorId);
 				prepstate.setString(2, firstName);
@@ -180,7 +181,7 @@ public class Controller extends HttpServlet {
 				// optional: check if instuctor-id exist in `tripcompany.instructor` table
 				String duration= request.getParameter("duration");
 				PreparedStatement prepstate = connection.prepareStatement
-				("INSERT INTO `tripCompany`.`site` (`name`, `instructorId`, `duration`) "
+				("INSERT INTO site (`name`, `instructorId`, `duration`) "
 						+ "VALUES (?, ?, ?)");
 				prepstate.setString(1, siteName);
 				prepstate.setString(2, instructorId);
@@ -192,9 +193,7 @@ public class Controller extends HttpServlet {
 						.getRequestDispatcher("/views/index.jsp");
 				dispatcher.forward(request, response);		
 			}
-		    
-
-	    	
+		    	    	
 	    	
 ////---------preview (before update)----------------------------------------------------- 
 	    	//Working!
@@ -388,15 +387,79 @@ public class Controller extends HttpServlet {
 		    
 		    
 ////---------Delete----------------------------------------------------- 
+	    	//Working!
 			else if(str.equals("/deleteTrip")){
-				// TODO Auto-generated catch block
-		    }
+                String TripNameToDelete= request.getParameter("tripDeleteName");
+                PreparedStatement prepstate = null;
+                try {
+                        prepstate = connection.prepareStatement
+                        ("DELETE FROM `trip` WHERE name=?");
+                        prepstate.setString(1, TripNameToDelete);
+                        prepstate.execute();
+                } catch (SQLException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                }
+		        RequestDispatcher dispatcher = getServletContext()
+		                        .getRequestDispatcher("/views/index.jsp");
+		        dispatcher.forward(request, response);                        
+				}
+	    	
+	    	//Working!
 			else if(str.equals("/deleteInstructor")){
-				// TODO Auto-generated catch block 	
-			}
+                String instructorIdToDelete= request.getParameter("instructorDeleteId");
+                PreparedStatement prepstate = null;
+                try {
+                        prepstate = connection.prepareStatement
+                        ("DELETE FROM `instructor` WHERE instructorId=?");
+                        prepstate.setString(1, instructorIdToDelete);
+                        prepstate.execute();
+                } catch (SQLException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                }
+		        RequestDispatcher dispatcher = getServletContext()
+		                        .getRequestDispatcher("/views/index.jsp");
+		        dispatcher.forward(request, response);                        
+				}
+		
 			else if(str.equals("/deleteSite")){
-				// TODO Auto-generated catch block
-		    }
+                String siteNameToDelete= request.getParameter("siteDeleteName");
+                PreparedStatement prepstate = null;
+                try {
+                        prepstate = connection.prepareStatement
+                        ("DELETE FROM `site` WHERE name=?");
+                        prepstate.setString(1, siteNameToDelete);
+                        prepstate.execute();
+                } catch (SQLException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                }
+		        RequestDispatcher dispatcher = getServletContext()
+		                        .getRequestDispatcher("/views/index.jsp");
+		        dispatcher.forward(request, response);                        
+				}
+			
+///-----------Procedures----------------------------------------------------
+			else if (str.equals("/procedureExample")){
+				String tripPrice = request.getParameter("tripPrice");
+				float price = Float.parseFloat(tripPrice);
+				CallableStatement cs;
+				ResultSet rs = null;
+				try {
+					cs = connection.prepareCall("CALL getTripsCheaperThen(?)");
+					cs.setFloat(1, price);
+				    rs = cs.executeQuery();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				request.setAttribute("ResultSet", rs);
+				
+				RequestDispatcher dispatcher = getServletContext()
+						.getRequestDispatcher("/views/procedureOutcome.jsp");
+				dispatcher.forward(request, response);	
+			}
 
 	    	
 	    	

@@ -75,7 +75,7 @@
 				  <br>
 				  
 				<form action="../controller/deleteInstructor" method="get">
-				    Instructor name to delete: <input type="Text" name="instructorDeleteName">
+				    Instructor ID to delete: <input type="Text" name="instructorDeleteId">
 				    <!-- submit-button delete trip -->
 				    <button type="submit" class="btn btn-success">Delete Instructor</button>
 				</form>
@@ -112,9 +112,9 @@
 		<div class="panel-heading">Procedure example</div>
 		  	<div class="panel-body">
 			   	This is an example of a procedure that will retrieve all trips that have a lower price then the one that is passed to the procedure.
-			   	<form action="../controller/procedure_example" method="get">
+			   	<form action="../controller/procedureExample" method="get">
 			   		Show all trips with price lower then:
-			   		<input type="Text" name="procedureText">
+			   		<input type="Text" name="tripPrice">
 			   		<button type="submit" class="btn btn-warning">Show trips</button>
 			   	</form>
 				
