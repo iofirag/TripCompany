@@ -11,7 +11,15 @@
 <p>Sorry, an error occurred.</p>
 <p>Here is the exception stack trace: </p>
 <pre>
-<% exception.printStackTrace(response.getWriter()); %>
+<% 
+
+try{
+	exception.printStackTrace(response.getWriter());
+}catch(Exception e){
+	e.printStackTrace();
+}
+
+	%>
 </pre>
 </body>
 </html>

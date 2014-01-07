@@ -82,6 +82,19 @@ public class Controller extends HttpServlet {
 			+" DELIMITER ; ";
 
 	
+	private Connection getConnection() {
+        if (connection == null){
+	        try {
+	        	Class.forName("com.mysql.jdbc.Driver");
+	            connection = DriverManager.getConnection("jdbc:mysql://localhost/tripcompany", "jaja", "gaga");
+	        }
+	        catch (Exception e) {
+	            e.printStackTrace();
+	        }
+        }
+        return connection;
+    }
+	
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -92,8 +105,7 @@ public class Controller extends HttpServlet {
         
         try{
 	        //Create tables
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost/tripcompany", "jaja", "gaga");
+			connection = getConnection();
 	    	Statement statement = connection.createStatement();
 	          
 	        //executing statements the create the main tables
@@ -103,12 +115,6 @@ public class Controller extends HttpServlet {
 	        statement.executeUpdate(createTravelerTable);
 	        statement.executeUpdate(createManagerTable);
 	        							System.out.println("create tables");
-	        
-	        //executing a procedure code
-	        //statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
-	        //statement.executeUpdate(tripsCheaperThenProcdure);
-	        //							System.out.println("tripsCheaperThenProcdure");
-	        //statement.executeUpdate(initTrigerBeforeDelete);
         }catch(Exception e){
         	e.printStackTrace();
         }
@@ -123,7 +129,21 @@ public class Controller extends HttpServlet {
 		try {
 		    
 	    	
+////--------------Create Procedure------------------------------------------------ 
+			if (str.equals("/createProcedure")){
+    	        //Create tables
+    			connection = getConnection();
+    	    	Statement statement = connection.createStatement();
+    	          
+    	        //executing a procedure code
+    	        statement.executeUpdate(tripsCheaperThenProcdure);
+    	        							System.out.println("tripsCheaperThenProcdure");
+	    	}
 
+			
+			
+			
+			
 		    
 ////--------------Add------------------------------------------------ 
 			//working!
@@ -465,31 +485,13 @@ public class Controller extends HttpServlet {
 		        dispatcher.forward(request, response);                        
 				}
 			
-///-----------Procedures----------------------------------------------------
-			else if (str.equals("/procedureExample")){
-				String tripPrice = request.getParameter("tripPrice");
-				float price = Float.parseFloat(tripPrice);
-				CallableStatement cs;
-				ResultSet rs = null;
-				try {
-					cs = connection.prepareCall("CALL getTripsCheaperThen(?)");
-					cs.setFloat(1, price);
-				    rs = cs.executeQuery();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				request.setAttribute("ResultSet", rs);
-				
-				RequestDispatcher dispatcher = getServletContext()
-						.getRequestDispatcher("/views/procedureOutcome.jsp");
-				dispatcher.forward(request, response);	
-			}
+	    	
+	    	
 
 	    	
 	    	
 ////---------Procedure----------------------------------------------------- 
-	    	//WORKING!
+	    	//
             //A procedure that print all trips that cost less then
             //the price that the user chose.
             else if (str.equals("/procedureExample")){
@@ -529,21 +531,33 @@ public class Controller extends HttpServlet {
 		    
 	
 	    	
-////---------Drop All-----------------------------------------------------
-			else if(str.equals("/dropAll")){
+	    	
+	    	
+////---------Drop-----------------------------------------------------
+			else if(str.equals("/dropTables")){
+				connection = getConnection();
 				Statement statement = connection.createStatement();
 				statement.execute("DROP TABLE trip");
 				statement.execute("DROP TABLE traveler");
 				statement.execute("DROP TABLE site");
 				statement.execute("DROP TABLE manager");
 				statement.execute("DROP TABLE instructor");
-				statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
-				statement.close();
-				System.out.println("drop all completed.");
+								System.out.println("Drop Tables.");
 				
 				RequestDispatcher dispatcher = getServletContext()
                         .getRequestDispatcher("/views/success.jsp");
-        dispatcher.forward(request, response);    
+				dispatcher.forward(request, response);    
+			}
+	    	
+			else if(str.equals("/dropProcedure")){
+				connection = getConnection();
+				Statement statement = connection.createStatement();
+				statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
+							System.out.println("Drop Procedure.");
+				
+				RequestDispatcher dispatcher = getServletContext()
+                        .getRequestDispatcher("/views/success.jsp");
+				dispatcher.forward(request, response);    
 			}
 		    
 	
