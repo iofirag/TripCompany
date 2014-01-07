@@ -21,5 +21,7 @@ try{
 
 	%>
 </pre>
+<br><br>
+<a href="../controller/*">home</a>
 </body>
 </html>

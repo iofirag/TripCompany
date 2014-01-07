@@ -59,16 +59,20 @@ public class Controller extends HttpServlet {
 	        +"        )";
 	
 	
-	String dropProcedureTripsCheaperThenProcdure= "DELIMITER //"
-	        + "DROP PROCEDURE IF EXISTS tripsCheaperThenProcdure //"
-	        + "DELIMITER ;";
+	String dropProcedureTripsCheaperThenProcdure= "DROP PROCEDURE IF EXISTS tripsCheaperThenProcdure";
 	
-	String tripsCheaperThenProcdure = "DELIMITER // "
-	        +" CREATE PROCEDURE getTripsCheaperThen(IN tripPrice FLOAT) "
+//	String tripsCheaperThenProcdure = "DELIMITER // "
+//	        +" CREATE PROCEDURE getTripsCheaperThen(IN tripPrice FLOAT) "
+//	        +" BEGIN "
+//	        +" SELECT * FROM trip WHERE ratePerTraveler < tripPrice; "
+//	        +" END // "
+//	        +" DELIMITER ; ";
+	
+	String tripsCheaperThenProcdure = "CREATE PROCEDURE "
+			+" getTripsCheaperThen(IN tripPrice FLOAT) "
 	        +" BEGIN "
 	        +" SELECT * FROM trip WHERE ratePerTraveler < tripPrice; "
-	        +" END // "
-	        +" DELIMITER ; ";
+	        +" END ; ";
 	
 	String initTrigerBeforeDelete = "DELIMITER // "
 			+" CREATE TRIGER initTrigerBeforeDelete"
@@ -102,10 +106,9 @@ public class Controller extends HttpServlet {
     public Controller() {
         super();
         System.out.println("controller constructor");
-        
+        connection = getConnection();
         try{
 	        //Create tables
-			connection = getConnection();
 	    	Statement statement = connection.createStatement();
 	          
 	        //executing statements the create the main tables
@@ -115,6 +118,17 @@ public class Controller extends HttpServlet {
 	        statement.executeUpdate(createTravelerTable);
 	        statement.executeUpdate(createManagerTable);
 	        							System.out.println("create tables");
+        }catch(Exception e){
+        	e.printStackTrace();
+        }
+	        	
+        try{
+	    	Statement statement = connection.createStatement();
+	    	
+			//executing a procedure code
+	        statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
+	        statement.executeUpdate(tripsCheaperThenProcdure);
+	        							System.out.println("create Procdure");
         }catch(Exception e){
         	e.printStackTrace();
         }
@@ -138,6 +152,10 @@ public class Controller extends HttpServlet {
     	        //executing a procedure code
     	        statement.executeUpdate(tripsCheaperThenProcdure);
     	        							System.out.println("tripsCheaperThenProcdure");
+    	        							
+				RequestDispatcher dispatcher = getServletContext()
+                        .getRequestDispatcher("/views/success.jsp");
+				dispatcher.forward(request, response);
 	    	}
 
 			
@@ -500,7 +518,7 @@ public class Controller extends HttpServlet {
                     CallableStatement cs;
                     ResultSet rs = null;
                     try {
-	                        cs = connection.prepareCall("(call getTripsCheaperThen(?))");
+	                        cs = connection.prepareCall("CALL getTripsCheaperThen(?)");
 	                        cs.setFloat(1, price);
 	                        rs = cs.executeQuery();
                     } catch (SQLException e) {
@@ -534,7 +552,25 @@ public class Controller extends HttpServlet {
 	    	
 	    	
 ////---------Drop-----------------------------------------------------
-			else if(str.equals("/dropTables")){
+			else if(str.equals("/dropAll")){
+				connection = getConnection();
+				Statement statement = connection.createStatement();
+				statement.execute("DROP TABLE trip");
+				statement.execute("DROP TABLE traveler");
+				statement.execute("DROP TABLE site");
+				statement.execute("DROP TABLE manager");
+				statement.execute("DROP TABLE instructor");
+								System.out.println("Drop Tables.");
+				
+				statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
+								System.out.println("Drop Procedure.");
+				
+				RequestDispatcher dispatcher = getServletContext()
+                        .getRequestDispatcher("/views/success.jsp");
+				dispatcher.forward(request, response);    
+			}
+	    	
+			else if(str.equals("/dropTable")){
 				connection = getConnection();
 				Statement statement = connection.createStatement();
 				statement.execute("DROP TABLE trip");
@@ -553,7 +589,7 @@ public class Controller extends HttpServlet {
 				connection = getConnection();
 				Statement statement = connection.createStatement();
 				statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
-							System.out.println("Drop Procedure.");
+								System.out.println("Drop Procedure.");
 				
 				RequestDispatcher dispatcher = getServletContext()
                         .getRequestDispatcher("/views/success.jsp");
