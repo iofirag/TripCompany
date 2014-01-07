@@ -25,6 +25,16 @@ public class Controller extends HttpServlet {
        
 	Connection connection = null;
 	
+	
+	 String createdeletedTripsBackup = "CREATE TABLE deletedtripsbackup ("
+	            +"        tripId INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
+	            +"        name VARCHAR(30), "
+	            +"        startDate VARCHAR(30), "
+	            +"        endDate VARCHAR(30), "
+	            +"        numOfTravelers INT(4), "
+	            +"        ratePerTraveler FLOAT(4) "
+	            +"        )";
+	
 	String createTripTable = "CREATE TABLE trip ("
             +"        tripId INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
             +"        name VARCHAR(30), "
@@ -59,32 +69,29 @@ public class Controller extends HttpServlet {
 	        +"        )";
 	
 	
-	String dropProcedureTripsCheaperThenProcdure= "DROP PROCEDURE IF EXISTS tripsCheaperThenProcdure";
+	String dropProcedureTripsCheaperThenProcdure= 
+			" DROP PROCEDURE IF EXISTS getTripsCheaperThen ;";
 	
-//	String tripsCheaperThenProcdure = "DELIMITER // "
-//	        +" CREATE PROCEDURE getTripsCheaperThen(IN tripPrice FLOAT) "
-//	        +" BEGIN "
-//	        +" SELECT * FROM trip WHERE ratePerTraveler < tripPrice; "
-//	        +" END // "
-//	        +" DELIMITER ; ";
 	
-	String tripsCheaperThenProcdure = "CREATE PROCEDURE "
-			+" getTripsCheaperThen(IN tripPrice FLOAT) "
-	        +" BEGIN "
-	        +" SELECT * FROM trip WHERE ratePerTraveler < tripPrice; "
-	        +" END ; ";
 	
-	String initTrigerBeforeDelete = "DELIMITER // "
-			+" CREATE TRIGER initTrigerBeforeDelete"
-			+" {BEFORE}"
-			+" {DELETE}"
-			+" ON trip"
-			+" ON EACH ROW"
-			+" @n= NEW.ID"
-			+" @o= OLD.ID"
-			+" @n=o"
-			+" DELIMITER ; ";
+	String tripsCheaperThenProcdure = 
+			 "CREATE PROCEDURE getTripsCheaperThen(IN tripPrice FLOAT)"
+			+" BEGIN"
+			+" SELECT * FROM trip WHERE ratePerTraveler <= tripPrice;"
+			+" END; ";
 
+	String triggerBeforeDelete = 
+			" CREATE TRIGGER tripBackup"
+			+ " BEFORE DELETE ON trip"
+			+ " FOR EACH ROW"
+			+ " BEGIN"
+			+ " INSERT INTO deletedtripsbackup2 (name,startDate,endDate,numOfTravelers,ratePerTraveler)" 
+			+ " VALUES (OLD.name, OLD.startDate, OLD.endDate, OLD.numOfTravelers, OLD.ratePerTraveler);"
+			+ " END; ";
+	
+	
+	//--------------------------------------------------------------
+	
 	
 	private Connection getConnection() {
         if (connection == null){
@@ -106,32 +113,74 @@ public class Controller extends HttpServlet {
     public Controller() {
         super();
         System.out.println("controller constructor");
-        connection = getConnection();
-        try{
-	        //Create tables
-	    	Statement statement = connection.createStatement();
-	          
-	        //executing statements the create the main tables
-			statement.executeUpdate(createTripTable);
-			statement.executeUpdate(createInstructorTable);
-	        statement.executeUpdate(createSiteTable);
-	        statement.executeUpdate(createTravelerTable);
-	        statement.executeUpdate(createManagerTable);
-	        							System.out.println("create tables");
-        }catch(Exception e){
-        	e.printStackTrace();
-        }
-	        	
-        try{
-	    	Statement statement = connection.createStatement();
-	    	
-			//executing a procedure code
-	        statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
-	        statement.executeUpdate(tripsCheaperThenProcdure);
-	        							System.out.println("create Procdure");
-        }catch(Exception e){
-        	e.printStackTrace();
-        }
+        // Create connection and open statement
+        try {
+        	connection = getConnection();
+        	Statement statement = connection.createStatement();;
+	
+        	//Create tables
+	        try{
+		    	statement.executeUpdate(createdeletedTripsBackup);
+								System.out.println("create deletedTripBackup table");
+	        }catch(Exception e){
+	        	e.printStackTrace();
+	        }
+	        try{
+				statement.executeUpdate(createTripTable);
+								System.out.println("create trip table");
+	        }catch(Exception e){
+	        	e.printStackTrace();
+	        }
+			try{
+				statement.executeUpdate(createInstructorTable);
+								System.out.println("create instructor table");
+			}catch(Exception e){
+	        	e.printStackTrace();
+	        }
+			try{
+		        statement.executeUpdate(createSiteTable);
+								System.out.println("create site table");
+			}catch(Exception e){
+	        	e.printStackTrace();
+	        }
+		    try{
+		        statement.executeUpdate(createTravelerTable);
+								System.out.println("create traveler table");
+		    }catch(Exception e){
+	        	e.printStackTrace();
+	        }
+		    try{
+		        statement.executeUpdate(createManagerTable);
+		        				System.out.println("create manager table");
+		    }catch(Exception e){
+	        	e.printStackTrace();
+	        }
+		
+		    //Create procedure	    	
+	        try{  	
+		        statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
+											System.out.println("Drop Procdure.");
+	        }catch(Exception e){
+	        	e.printStackTrace();
+	        }
+	        try{  	
+		        statement.executeUpdate(tripsCheaperThenProcdure);
+											System.out.println("Create Procedure.");
+	        }catch(Exception e){
+	        	e.printStackTrace();
+	        }
+	        
+	        //Create trigger
+	        try{      	
+		        statement.executeUpdate(triggerBeforeDelete);
+		        							System.out.println("Create Trigger.");
+	        }catch(SQLException e){
+	        	e.printStackTrace();
+	        }
+        } catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
 	/**
@@ -143,7 +192,7 @@ public class Controller extends HttpServlet {
 		try {
 		    
 	    	
-////--------------Create Procedure------------------------------------------------ 
+////--------------(optional)--Create Procedure------------------------------------------------ 
 			if (str.equals("/createProcedure")){
     	        //Create tables
     			connection = getConnection();
@@ -551,10 +600,11 @@ public class Controller extends HttpServlet {
 	    	
 	    	
 	    	
-////---------Drop-----------------------------------------------------
+////---------(optional)--Drop-----------------------------------------------------
 			else if(str.equals("/dropAll")){
 				connection = getConnection();
 				Statement statement = connection.createStatement();
+				statement.execute("DROP TABLE deletedtripsbackup");
 				statement.execute("DROP TABLE trip");
 				statement.execute("DROP TABLE traveler");
 				statement.execute("DROP TABLE site");
@@ -570,9 +620,10 @@ public class Controller extends HttpServlet {
 				dispatcher.forward(request, response);    
 			}
 	    	
-			else if(str.equals("/dropTable")){
+			else if(str.equals("/dropTables")){
 				connection = getConnection();
 				Statement statement = connection.createStatement();
+				statement.execute("DROP TABLE deletedtripsbackup");
 				statement.execute("DROP TABLE trip");
 				statement.execute("DROP TABLE traveler");
 				statement.execute("DROP TABLE site");
