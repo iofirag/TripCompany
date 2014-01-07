@@ -56,6 +56,13 @@
 				    <button type="submit" class="btn btn-primary">Delete Trip</button>
 				</form>
 				
+				
+					<form action="../controller/twoFiltersSelect" method="get">
+				    Trip name : <input type="Text" name="tripName">
+				    Number of travelers : <input type="Text" name="numOfTravelers">
+				    <!-- submit-button delete trip -->
+				    <button type="submit" class="btn btn-primary">Show</button>
+				</form>
 			</div>
 		</div>
 		

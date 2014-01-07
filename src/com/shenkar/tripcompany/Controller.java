@@ -23,10 +23,10 @@ import javax.servlet.http.HttpServletResponse;
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-	Boolean db=false;
+	
 	Connection connection = null;
 	
-	String createTripTable = "CREATE TABLE trip ("
+	 String createdeletedTripsBackup = "CREATE TABLE deletedtripsbackup2 ("
             +"        tripId INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
             +"        name VARCHAR(30), "
             +"        startDate VARCHAR(30), "
@@ -34,24 +34,35 @@ public class Controller extends HttpServlet {
             +"        numOfTravelers INT(4), "
             +"        ratePerTraveler FLOAT(4) "
             +"        )";
-	String createInstructorTable = "CREATE TABLE instructor ("
+	
+	 String createTripTable = "CREATE TABLE trip ("
+            +"        tripId INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
+            +"        name VARCHAR(30), "
+            +"        startDate VARCHAR(30), "
+            +"        endDate VARCHAR(30), "
+            +"        numOfTravelers INT(4), "
+            +"        ratePerTraveler FLOAT(4) "
+            +"        )";
+	
+	 String createInstructorTable = "CREATE TABLE instructor ("
 	        +"        instructorId VARCHAR(30) NOT NULL PRIMARY KEY, "
 	        +"        name VARCHAR(30), "
 	        +"        lastName VARCHAR(30), "
 	        +"        address VARCHAR(30) "
 	        +"        )";
-	String createSiteTable = "CREATE TABLE site ("
+	
+	 String createSiteTable = "CREATE TABLE site ("
 	        +"        name VARCHAR(30) NOT NULL PRIMARY KEY, "
 	        +"        instructorId VARCHAR(30), "
 	        +"        duration VARCHAR(5) "
 	        +"        )";
-	String createTravelerTable = "CREATE TABLE traveler ("
+	 String createTravelerTable = "CREATE TABLE traveler ("
 	        +"        travelerId VARCHAR(30) NOT NULL PRIMARY KEY, "
 	        +"        name VARCHAR(30), "
 	        +"        lastName VARCHAR(30), "
 	        +"        rate FLOAT(4) "                //maybe a mistake to have rate in traveler
 	        +"        )";
-	String createManagerTable = "CREATE TABLE manager ("
+	 String createManagerTable = "CREATE TABLE manager ("
 	        +"        managerId VARCHAR(30) NOT NULL PRIMARY KEY, "
 	        +"        name VARCHAR(30), "
 	        +"        lastName VARCHAR(30), "
@@ -60,28 +71,24 @@ public class Controller extends HttpServlet {
 	        +"        )";
 	
 	
-	String dropProcedureTripsCheaperThenProcdure= "DELIMITER //"
-	        + "DROP PROCEDURE IF EXISTS tripsCheaperThenProcdure //"
-	        + "DELIMITER ;";
+	 String dropProcedureTripsCheaperThenProcdure= 
+			" DROP PROCEDURE IF EXISTS getTripsCheaperThen ;";
 	
-	String tripsCheaperThenProcdure = "DELIMITER // "
-	        +" CREATE PROCEDURE getTripsCheaperThen(IN tripPrice FLOAT) "
-	        +" BEGIN "
-	        +" SELECT * FROM trip WHERE ratePerTraveler < tripPrice; "
-	        +" END // "
-	        +" DELIMITER ; ";
+	 String tripsCheaperThenProcdure = 
+			 "CREATE PROCEDURE getTripsCheaperThen(IN tripPrice FLOAT)"
+			+" BEGIN"
+			+" SELECT * FROM trip WHERE ratePerTraveler <= tripPrice;"
+			+" END; ";
 	
-	String initTrigerBeforeDelete = "DELIMITER // "
-			+" CREATE TRIGER initTrigerBeforeDelete"
-			+" {BEFORE}"
-			+" {DELETE}"
-			+" ON trip"
-			+" ON EACH ROW"
-			+" @n= NEW.ID"
-			+" @o= OLD.ID"
-			+" @n=o"
-			+" DELIMITER ; ";
-
+	
+	 String triggerBeforeDelete = 
+			" CREATE TRIGGER tripBackup"
+			+ " BEFORE DELETE ON trip"
+			+ " FOR EACH ROW"
+			+ " BEGIN"
+			+ " INSERT INTO deletedtripsbackup2 (name,startDate,endDate,numOfTravelers,ratePerTraveler)" 
+			+ " VALUES (OLD.name, OLD.startDate, OLD.endDate, OLD.numOfTravelers, OLD.ratePerTraveler);"
+			+ " END; ";
 	
 	
     /**
@@ -90,31 +97,46 @@ public class Controller extends HttpServlet {
     public Controller() {
         super();
         System.out.println("controller constructor");
-        System.out.println("db="+db);
+        
         try{
-        	if (db==false){
-	    		System.out.println("create tables");
+        	
+	    		
 	    		
 		        //Create tables
 	
 				Class.forName("com.mysql.jdbc.Driver");
 				connection = DriverManager.getConnection("jdbc:mysql://localhost/test", "jaja", "gaga");
-	        	Statement statement = connection.createStatement();
+	        	
 	              
 	            //executing statements the create the main tables
+	        	try{
+	        		Statement statement = connection.createStatement();
+	        		
+	        	statement.executeUpdate(createdeletedTripsBackup);
 				statement.executeUpdate(createTripTable);
 				statement.executeUpdate(createInstructorTable);
 	            statement.executeUpdate(createSiteTable);
 	            statement.executeUpdate(createTravelerTable);
 	            statement.executeUpdate(createManagerTable);
-	            statement.close();
-	            
+	            System.out.println("create tables");
+	        	}
+	        	catch(SQLException e)
+	        	{
+	        		e.printStackTrace();
+	        	}
 	            //executing a procedure code
-	            //statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
-	            //statement.executeUpdate(tripsCheaperThenProcdure);
-	            //statement.executeUpdate(initTrigerBeforeDelete);
-	            db=true;		
-        	}
+	        	try{
+	        	Statement statement = connection.createStatement();
+	            statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
+	            statement.executeUpdate(tripsCheaperThenProcdure);
+	            statement.executeUpdate(triggerBeforeDelete);
+	        	}
+	        	catch(SQLException e)
+	        	{
+	        		e.printStackTrace();
+	        	}
+	           		
+        	
         }catch(Exception e){
         	e.printStackTrace();
         }
@@ -209,7 +231,8 @@ public class Controller extends HttpServlet {
                 int numOfTravelers = 0;
                 int tripId=0;
                 try {
-	                	PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM trip WHERE name=?");
+                	//Including SQL FUNCTION LCASE()
+	                	PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM trip WHERE LCASE( nAMe )=?");
 	                    prepstate.setString(1, tripUpdateName);
 	                    ResultSet rs = prepstate.executeQuery();
 	                    while (rs.next())
@@ -447,7 +470,7 @@ public class Controller extends HttpServlet {
 				CallableStatement cs;
 				ResultSet rs = null;
 				try {
-					cs = connection.prepareCall("CALL getTripsCheaperThen(?)");
+					cs = connection.prepareCall("call getTripsCheaperThen(?)");
 					cs.setFloat(1, price);
 				    rs = cs.executeQuery();
 				} catch (SQLException e) {
@@ -487,6 +510,23 @@ public class Controller extends HttpServlet {
 				statement.execute("DROP TABLE instructor");
 				statement.close();
 				System.out.println("drop all completed.");
+			}
+////---------------------------------------------------------------------------
+			else if(str.equals("/twoFiltersSelect")){
+				Statement statement = connection.createStatement();
+				String tripName= request.getParameter("tripName");
+				String numOfTravelers= request.getParameter("numOfTravelers");
+				
+				PreparedStatement ps = connection.prepareStatement("SELECT * FROM  `trip` WHERE name = ? AND numOfTravelers < ? ");
+                ps.setString(1, tripName);
+                ps.setInt(2, Integer.parseInt(numOfTravelers));
+                ResultSet rs = ps.executeQuery();
+                request.setAttribute("rs", rs);
+                statement.close();
+				System.out.println("Filter executed");
+				RequestDispatcher dispatcher = getServletContext()
+						.getRequestDispatcher("/views/twoFiltersTrip.jsp");
+				dispatcher.forward(request, response);
 			}
 		    
 	
