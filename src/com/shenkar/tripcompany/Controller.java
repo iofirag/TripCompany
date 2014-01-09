@@ -100,7 +100,8 @@ public class Controller extends HttpServlet {
         if (connection == null){
 	        try {
 	        	Class.forName("com.mysql.jdbc.Driver");
-	            connection = DriverManager.getConnection("jdbc:mysql://localhost/tripcompany", "jaja", "gaga");
+	            connection = DriverManager.getConnection("jdbc:mysql://ec2-50-19-213-178.compute-1.amazonaws.com", "jaja3", "gaga");
+	            //connection = DriverManager.getConnection("jdbc:mysql://localhost/tripcompany", "jaja", "gaga");
 	        }
 	        catch (Exception e) {
 	            e.printStackTrace();
