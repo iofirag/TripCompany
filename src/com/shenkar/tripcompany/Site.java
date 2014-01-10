@@ -1,16 +1,14 @@
 package com.shenkar.tripcompany;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 
-@Entity
+
 public class Site {
 	String name;
 	String instructorId;
 	String duration;
 	
 	
-	@Id
+
 	public String getName() {
 		return name;
 	}

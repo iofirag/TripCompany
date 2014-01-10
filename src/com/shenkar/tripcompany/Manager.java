@@ -1,11 +1,11 @@
 package com.shenkar.tripcompany;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 
 
 
-@Entity
+
+
+
 public class Manager {
 	String managerId;
 	String name;
@@ -13,7 +13,7 @@ public class Manager {
 	String address;
 	String managingArea;
 
-	@Id
+
 	public String getManagerId() {
 		return managerId;
 	}

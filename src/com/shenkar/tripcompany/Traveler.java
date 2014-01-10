@@ -1,16 +1,13 @@
 package com.shenkar.tripcompany;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 
-@Entity
 public class Traveler {
 	String travelerId;
 	String name;
 	String lastName;
 	String rate;
 	
-	@Id
+
 	public String getTravelerId() {
 		return travelerId;
 	}

@@ -1,18 +1,12 @@
 package com.shenkar.tripcompany;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 
-
-
-@Entity
 public class Instractor {
 	String instructorId;
 	String name;
 	String lastName;
 	String address;
 	
-	@Id
 	public String getInstructorId() {
 		return instructorId;
 	}

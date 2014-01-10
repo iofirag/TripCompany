@@ -3,18 +3,21 @@ package com.shenkar.tripcompany;
 import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
+
 
 /**
  * Servlet implementation class Controller
@@ -99,9 +102,9 @@ public class Controller extends HttpServlet {
 	private Connection getConnection() {
         if (connection == null){
 	        try {
-	        	Class.forName("com.mysql.jdbc.Driver");
-	            connection = DriverManager.getConnection("jdbc:mysql://ec2-50-19-213-178.compute-1.amazonaws.com", "jaja3", "gaga");
-	            //connection = DriverManager.getConnection("jdbc:mysql://localhost/tripcompany", "jaja", "gaga");
+	        	Context ctx = new InitialContext();
+	        	DataSource ds = (DataSource)ctx.lookup("java:comp/env/jdbc/mydb");
+	        	connection = ds.getConnection();
 	        }
 	        catch (Exception e) {
 	            e.printStackTrace();

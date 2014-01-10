@@ -1,8 +1,8 @@
 package com.shenkar.tripcompany;
 
-import javax.persistence.*;
 
-@Entity
+
+
 public class Trip {
 	int tripId;
 	String name;
@@ -12,7 +12,7 @@ public class Trip {
 	double ratePerTraveler;
 	
 	
-	@Id
+
 	public int getTripId() {
 		return tripId;
 	}
