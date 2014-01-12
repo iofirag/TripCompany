@@ -26,10 +26,10 @@ import javax.sql.DataSource;
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-	Connection connection = null;
+	static Connection connection = null;
 	
 	
-	 String createdeletedTripsBackup = "CREATE TABLE deletedtripsbackup ("
+	public static String createdeletedTripsBackup = "CREATE TABLE deletedtripsbackup ("
 	            +"        tripId INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
 	            +"        name VARCHAR(30), "
 	            +"        startDate VARCHAR(30), "
@@ -38,7 +38,7 @@ public class Controller extends HttpServlet {
 	            +"        ratePerTraveler FLOAT(4) "
 	            +"        )";
 	
-	String createTripTable = "CREATE TABLE trip ("
+	public static String createTripTable = "CREATE TABLE trip ("
             +"        tripId INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
             +"        name VARCHAR(30), "
             +"        startDate VARCHAR(30), "
@@ -47,25 +47,25 @@ public class Controller extends HttpServlet {
             +"        ratePerTraveler FLOAT(4) "
             +"        )";
 	
-	 String createInstructorTable = "CREATE TABLE instructor ("
+	public static String createInstructorTable = "CREATE TABLE instructor ("
 	        +"        instructorId VARCHAR(30) NOT NULL PRIMARY KEY, "
 	        +"        name VARCHAR(30), "
 	        +"        lastName VARCHAR(30), "
 	        +"        address VARCHAR(30) "
 	        +"        )";
 	
-	 String createSiteTable = "CREATE TABLE site ("
+	public static String createSiteTable = "CREATE TABLE site ("
 	        +"        name VARCHAR(30) NOT NULL PRIMARY KEY, "
 	        +"        instructorId VARCHAR(30), "
 	        +"        duration VARCHAR(30) "
 	        +"        )";
-	 String createTravelerTable = "CREATE TABLE traveler ("
+	public static String createTravelerTable = "CREATE TABLE traveler ("
 	        +"        travelerId VARCHAR(30) NOT NULL PRIMARY KEY, "
 	        +"        name VARCHAR(30), "
 	        +"        lastName VARCHAR(30), "
 	        +"        rate FLOAT(4) "                //maybe a mistake to have rate in traveler
 	        +"        )";
-	 String createManagerTable = "CREATE TABLE manager ("
+	public static String createManagerTable = "CREATE TABLE manager ("
 	        +"        managerId VARCHAR(30) NOT NULL PRIMARY KEY, "
 	        +"        name VARCHAR(30), "
 	        +"        lastName VARCHAR(30), "
@@ -74,18 +74,18 @@ public class Controller extends HttpServlet {
 	        +"        )";
 	
 	
-	String dropProcedureTripsCheaperThenProcdure= 
+	public static String dropProcedureTripsCheaperThenProcdure= 
 			" DROP PROCEDURE IF EXISTS getTripsCheaperThen ;";
 	
 	
 	
-	String tripsCheaperThenProcdure = 
+	public static String tripsCheaperThenProcdure = 
 			 "CREATE PROCEDURE getTripsCheaperThen(IN tripPrice FLOAT)"
 			+" BEGIN"
 			+" SELECT * FROM trip WHERE ratePerTraveler <= tripPrice;"
 			+" END; ";
 
-	String triggerBeforeDelete = 
+	public static String triggerBeforeDelete = 
 			" CREATE TRIGGER tripBackup"
 			+ " BEFORE DELETE ON trip"
 			+ " FOR EACH ROW"
@@ -99,7 +99,7 @@ public class Controller extends HttpServlet {
 	//--------------------------------------------------------------
 	
 	
-	private Connection getConnection() {
+	public static Connection getConnection() {
         if (connection == null){
 	        try {
 	        	Context ctx = new InitialContext();
@@ -120,74 +120,7 @@ public class Controller extends HttpServlet {
     public Controller() {
         super();
         System.out.println("controller constructor");
-        // Create connection and open statement
-        try {
-        	connection = getConnection();
-        	Statement statement = connection.createStatement();;
-	
-        	//Create tables
-	        try{
-		    	statement.executeUpdate(createdeletedTripsBackup);
-								System.out.println("create deletedTripBackup table");
-	        }catch(Exception e){
-	        	e.printStackTrace();
-	        }
-	        try{
-				statement.executeUpdate(createTripTable);
-								System.out.println("create trip table");
-	        }catch(Exception e){
-	        	e.printStackTrace();
-	        }
-			try{
-				statement.executeUpdate(createInstructorTable);
-								System.out.println("create instructor table");
-			}catch(Exception e){
-	        	e.printStackTrace();
-	        }
-			try{
-		        statement.executeUpdate(createSiteTable);
-								System.out.println("create site table");
-			}catch(Exception e){
-	        	e.printStackTrace();
-	        }
-		    try{
-		        statement.executeUpdate(createTravelerTable);
-								System.out.println("create traveler table");
-		    }catch(Exception e){
-	        	e.printStackTrace();
-	        }
-		    try{
-		        statement.executeUpdate(createManagerTable);
-		        				System.out.println("create manager table");
-		    }catch(Exception e){
-	        	e.printStackTrace();
-	        }
-		
-		    //Create procedure	    	
-	        try{  	
-		        statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
-											System.out.println("Drop Procdure.");
-	        }catch(Exception e){
-	        	e.printStackTrace();
-	        }
-	        try{  	
-		        statement.executeUpdate(tripsCheaperThenProcdure);
-											System.out.println("Create Procedure.");
-	        }catch(Exception e){
-	        	e.printStackTrace();
-	        }
-	        
-	        //Create trigger
-	        try{      	
-		        statement.executeUpdate(triggerBeforeDelete);
-		        							System.out.println("Create Trigger.");
-	        }catch(SQLException e){
-	        	e.printStackTrace();
-	        }
-        } catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        connection = getConnection();
     }
 
 	/**
@@ -202,8 +135,7 @@ public class Controller extends HttpServlet {
 ////--------------(optional)--Create Procedure------------------------------------------------ 
 			if (str.equals("/createProcedure")){
     	        //Create tables
-    			connection = getConnection();
-    	    	Statement statement = connection.createStatement();
+    	    	Statement statement = getConnection().createStatement();
     	          
     	        //executing a procedure code
     	        statement.executeUpdate(tripsCheaperThenProcdure);
@@ -227,7 +159,7 @@ public class Controller extends HttpServlet {
 				String endDate= request.getParameter("endDate");
 				String ratePerTraveler= request.getParameter("ratePerTraveler");
 				String numOfTravelers= request.getParameter("numOfTravelers");
-				PreparedStatement prepstate = connection.prepareStatement
+				PreparedStatement prepstate = getConnection().prepareStatement
 				("INSERT INTO trip (`name`, `startDate`, `endDate`, `numOfTravelers`, `ratePerTraveler`) "
 						+ "VALUES (?, ?, ?, ?, ?)");
 				prepstate.setString(1, tripName);
@@ -248,7 +180,7 @@ public class Controller extends HttpServlet {
 				String firstName= request.getParameter("firstName");
 				String lastName= request.getParameter("lastName");
 				String address= request.getParameter("address");
-				PreparedStatement prepstate = connection.prepareStatement
+				PreparedStatement prepstate = getConnection().prepareStatement
 				("INSERT INTO instructor (`instructorId`, `name`, `lastName`, `address`) "
 						+ "VALUES (?, ?, ?, ?)");
 				prepstate.setString(1, instructorId);
@@ -268,7 +200,7 @@ public class Controller extends HttpServlet {
 				String instructorId= request.getParameter("instructorId");
 				// optional: check if instuctor-id exist in `tripcompany.instructor` table
 				String duration= request.getParameter("duration");
-				PreparedStatement prepstate = connection.prepareStatement
+				PreparedStatement prepstate = getConnection().prepareStatement
 				("INSERT INTO site (`name`, `instructorId`, `duration`) "
 						+ "VALUES (?, ?, ?)");
 				prepstate.setString(1, siteName);
@@ -298,7 +230,7 @@ public class Controller extends HttpServlet {
                 int tripId=0;
                 try {
                 	//Including SQL FUNCTION LCASE()
-	                	PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM trip WHERE LCASE( nAMe )=?");
+	                	PreparedStatement prepstate = getConnection().prepareStatement ("SELECT * FROM trip WHERE LCASE( nAMe )=?");
 	                    prepstate.setString(1, tripUpdateName);
 	                    ResultSet rs = prepstate.executeQuery();
 	                    boolean found = false;
@@ -351,7 +283,7 @@ public class Controller extends HttpServlet {
 				String lastName = null;
 				String address = null;
                 try {
-                		PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM instructor WHERE instructorId=?");
+                		PreparedStatement prepstate = getConnection().prepareStatement ("SELECT * FROM instructor WHERE instructorId=?");
                         prepstate.setString(1, instructorUpdateId);
                         ResultSet rs = prepstate.executeQuery();
                         boolean found = false;
@@ -396,7 +328,7 @@ public class Controller extends HttpServlet {
 				String instructorId = null;
 				String duration = null;
                 try {
-                		PreparedStatement prepstate = connection.prepareStatement ("SELECT * FROM site WHERE name=?");
+                		PreparedStatement prepstate = getConnection().prepareStatement ("SELECT * FROM site WHERE name=?");
                         prepstate.setString(1, siteUpdateName);
                         ResultSet rs = prepstate.executeQuery();
                         boolean found = false;
@@ -446,7 +378,7 @@ public class Controller extends HttpServlet {
                 double ratePerTraveler = Double.parseDouble( request.getParameter("ratePerTraveler")  );
                 
 //                //add to db this fields
-                PreparedStatement prepstate = connection.prepareStatement (" UPDATE trip SET name=?, startDate=?, endDate=?, numOfTravelers=?, ratePerTraveler=? WHERE tripId=?" );
+                PreparedStatement prepstate = getConnection().prepareStatement (" UPDATE trip SET name=?, startDate=?, endDate=?, numOfTravelers=?, ratePerTraveler=? WHERE tripId=?" );
                 prepstate.setString(1, name);
                 prepstate.setString(2, startDate);
                 prepstate.setString(3, endDate);
@@ -470,7 +402,7 @@ public class Controller extends HttpServlet {
 				String address = request.getParameter("address");
 				
 				//add to db this fields
-                PreparedStatement prepstate = connection.prepareStatement (" UPDATE instructor SET instructorId=?, name=?, lastName=?, address=? WHERE instructorId=?");
+                PreparedStatement prepstate = getConnection().prepareStatement (" UPDATE instructor SET instructorId=?, name=?, lastName=?, address=? WHERE instructorId=?");
                 prepstate.setString(1, instructorId);
                 prepstate.setString(2, name);
                 prepstate.setString(3, lastName);
@@ -492,7 +424,7 @@ public class Controller extends HttpServlet {
 				String duration = request.getParameter("duration");
 				
 				//add to db this fields
-                PreparedStatement prepstate = connection.prepareStatement ("UPDATE site SET name=?, instructorId=?, duration=? WHERE name=?" );
+                PreparedStatement prepstate = getConnection().prepareStatement ("UPDATE site SET name=?, instructorId=?, duration=? WHERE name=?" );
                 prepstate.setString(1, name);
                 prepstate.setString(2, instructorId);
                 prepstate.setString(3, duration);
@@ -512,7 +444,7 @@ public class Controller extends HttpServlet {
                 String TripNameToDelete= request.getParameter("tripDeleteName");
                 PreparedStatement prepstate = null;
                 try {
-                        prepstate = connection.prepareStatement
+                        prepstate = getConnection().prepareStatement
                         ("DELETE FROM `trip` WHERE name=?");
                         prepstate.setString(1, TripNameToDelete);
                         prepstate.execute();
@@ -530,7 +462,7 @@ public class Controller extends HttpServlet {
                 String instructorIdToDelete= request.getParameter("instructorDeleteId");
                 PreparedStatement prepstate = null;
                 try {
-                        prepstate = connection.prepareStatement
+                        prepstate = getConnection().prepareStatement
                         ("DELETE FROM `instructor` WHERE instructorId=?");
                         prepstate.setString(1, instructorIdToDelete);
                         prepstate.execute();
@@ -547,7 +479,7 @@ public class Controller extends HttpServlet {
                 String siteNameToDelete= request.getParameter("siteDeleteName");
                 PreparedStatement prepstate = null;
                 try {
-                        prepstate = connection.prepareStatement
+                        prepstate = getConnection().prepareStatement
                         ("DELETE FROM `site` WHERE name=?");
                         prepstate.setString(1, siteNameToDelete);
                         prepstate.execute();
@@ -570,7 +502,7 @@ public class Controller extends HttpServlet {
 				CallableStatement cs;
 				ResultSet rs = null;
 				try {
-					cs = connection.prepareCall("call getTripsCheaperThen(?)");
+					cs = getConnection().prepareCall("call getTripsCheaperThen(?)");
 					cs.setFloat(1, price);
 				    rs = cs.executeQuery();
 				} catch (SQLException e) {
@@ -596,7 +528,7 @@ public class Controller extends HttpServlet {
                     CallableStatement cs;
                     ResultSet rs = null;
                     try {
-	                        cs = connection.prepareCall("CALL getTripsCheaperThen(?)");
+	                        cs = getConnection().prepareCall("CALL getTripsCheaperThen(?)");
 	                        cs.setFloat(1, price);
 	                        rs = cs.executeQuery();
                     } catch (SQLException e) {
@@ -631,8 +563,7 @@ public class Controller extends HttpServlet {
 	    	
 ////---------(optional)--Drop-----------------------------------------------------
 			else if(str.equals("/dropAll")){
-				connection = getConnection();
-				Statement statement = connection.createStatement();
+				Statement statement = getConnection().createStatement();
 				statement.execute("DROP TABLE deletedtripsbackup");
 				statement.execute("DROP TABLE trip");
 				statement.execute("DROP TABLE traveler");
@@ -650,8 +581,7 @@ public class Controller extends HttpServlet {
 			}
 	    	
 			else if(str.equals("/dropTables")){
-				connection = getConnection();
-				Statement statement = connection.createStatement();
+				Statement statement = getConnection().createStatement();
 				statement.execute("DROP TABLE deletedtripsbackup");
 				statement.execute("DROP TABLE trip");
 				statement.execute("DROP TABLE traveler");
@@ -666,8 +596,7 @@ public class Controller extends HttpServlet {
 			}
 	    	
 			else if(str.equals("/dropProcedure")){
-				connection = getConnection();
-				Statement statement = connection.createStatement();
+				Statement statement = getConnection().createStatement();
 				statement.executeUpdate(dropProcedureTripsCheaperThenProcdure);
 								System.out.println("Drop Procedure.");
 				
@@ -677,11 +606,11 @@ public class Controller extends HttpServlet {
 			}
 ////---------------------------------------------------------------------------
 			else if(str.equals("/twoFiltersSelect")){
-				Statement statement = connection.createStatement();
+				Statement statement = getConnection().createStatement();
 				String tripName= request.getParameter("tripName");
 				String numOfTravelers= request.getParameter("numOfTravelers");
 				
-				PreparedStatement ps = connection.prepareStatement("SELECT * FROM  `trip` WHERE name = ? AND numOfTravelers < ? ");
+				PreparedStatement ps = getConnection().prepareStatement("SELECT * FROM  `trip` WHERE name = ? AND numOfTravelers < ? ");
                 ps.setString(1, tripName);
                 ps.setInt(2, Integer.parseInt(numOfTravelers));
                 ResultSet rs = ps.executeQuery();
