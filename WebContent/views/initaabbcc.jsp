@@ -13,8 +13,7 @@
 
 	//Create connection and open statement
 	try {
-		Connection connecion = Controller.getConnection();
-		Statement statement = connecion.createStatement();
+		Statement statement = Controller.getConnection().createStatement();
 	
 		//Create tables
 	    try{
