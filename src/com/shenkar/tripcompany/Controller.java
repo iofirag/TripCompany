@@ -3,6 +3,7 @@ package com.shenkar.tripcompany;
 import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -90,7 +91,7 @@ public class Controller extends HttpServlet {
 			+ " BEFORE DELETE ON trip"
 			+ " FOR EACH ROW"
 			+ " BEGIN"
-			+ " INSERT INTO deletedtripsbackup2 (name,startDate,endDate,numOfTravelers,ratePerTraveler)" 
+			+ " INSERT INTO deletedtripsbackup (name,startDate,endDate,numOfTravelers,ratePerTraveler)" 
 			+ " VALUES (OLD.name, OLD.startDate, OLD.endDate, OLD.numOfTravelers, OLD.ratePerTraveler);"
 			+ " END; ";
 
@@ -102,9 +103,14 @@ public class Controller extends HttpServlet {
 	public static Connection getConnection() {
         if (connection == null){
 	        try {
-	        	Context ctx = new InitialContext();
-	        	DataSource ds = (DataSource)ctx.lookup("java:comp/env/jdbc/mydb");
-	        	connection = ds.getConnection();
+	        	Class.forName("com.mysql.jdbc.Driver");
+	        	connection = DriverManager.getConnection("jdbc:mysql://localhost/tripcompany", "jaja", "gaga");
+                /*Statement statement = connection.createStatement();*/
+	        	
+	        	// for online
+//	        	Context ctx = new InitialContext();
+//	        	DataSource ds = (DataSource)ctx.lookup("java:comp/env/jdbc/mydb");
+//	        	connection = ds.getConnection();
 	        }
 	        catch (Exception e) {
 	            e.printStackTrace();
@@ -495,7 +501,10 @@ public class Controller extends HttpServlet {
 	    	
 	    	
 	    	
-///-----------Procedures----------------------------------------------------
+////---------Procedure----------------------------------------------------- 
+	    	//
+            //A procedure that print all trips that cost less then
+            //the price that the user chose.
 			else if (str.equals("/procedureExample")){
 				String tripPrice = request.getParameter("tripPrice");
 				float price = Float.parseFloat(tripPrice);
@@ -518,29 +527,29 @@ public class Controller extends HttpServlet {
 
 	    	
 	    	
-////---------Procedure----------------------------------------------------- 
-	    	//
-            //A procedure that print all trips that cost less then
-            //the price that the user chose.
-            else if (str.equals("/procedureExample")){
-                    String tripPrice = request.getParameter("tripPrice");
-                    float price = Float.parseFloat(tripPrice);
-                    CallableStatement cs;
-                    ResultSet rs = null;
-                    try {
-	                        cs = getConnection().prepareCall("CALL getTripsCheaperThen(?)");
-	                        cs.setFloat(1, price);
-	                        rs = cs.executeQuery();
-                    } catch (SQLException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                    }
-                    request.setAttribute("ResultSet", rs);
-                    
-                    RequestDispatcher dispatcher = getServletContext()
-                                    .getRequestDispatcher("/views/procedureOutcome.jsp");
-                    dispatcher.forward(request, response);        
-            }
+//////---------Procedure----------------------------------------------------- 
+//	    	//
+//            //A procedure that print all trips that cost less then
+//            //the price that the user chose.
+//            else if (str.equals("/procedureExample")){
+//                    String tripPrice = request.getParameter("tripPrice");
+//                    float price = Float.parseFloat(tripPrice);
+//                    CallableStatement cs;
+//                    ResultSet rs = null;
+//                    try {
+//	                        cs = getConnection().prepareCall("CALL getTripsCheaperThen(?)");
+//	                        cs.setFloat(1, price);
+//	                        rs = cs.executeQuery();
+//                    } catch (SQLException e) {
+//                            // TODO Auto-generated catch block
+//                            e.printStackTrace();
+//                    }
+//                    request.setAttribute("ResultSet", rs);
+//                    
+//                    RequestDispatcher dispatcher = getServletContext()
+//                                    .getRequestDispatcher("/views/procedureOutcome.jsp");
+//                    dispatcher.forward(request, response);        
+//            }
 	    	
 	    	
 	    	
@@ -604,7 +613,9 @@ public class Controller extends HttpServlet {
                         .getRequestDispatcher("/views/success.jsp");
 				dispatcher.forward(request, response);    
 			}
-////---------------------------------------------------------------------------
+	    	
+	    	
+////---2 filters select--------------------------------------------------------------------
 			else if(str.equals("/twoFiltersSelect")){
 				Statement statement = getConnection().createStatement();
 				String tripName= request.getParameter("tripName");
@@ -622,7 +633,47 @@ public class Controller extends HttpServlet {
 				dispatcher.forward(request, response);
 			}
 		    
-	
+//------Report----------------------------------------------------------------------------------------------------------	
+			else if(str.equals("/instructorReport")){
+				Statement statement = getConnection().createStatement();
+				PreparedStatement ps = getConnection().prepareStatement("SELECT * FROM  `instructor` ORDER BY `name` ASC  ");
+                ResultSet rs = ps.executeQuery();
+                request.setAttribute("rs", rs);
+                statement.close();
+				//System.out.println("Filter executed");
+				RequestDispatcher dispatcher = getServletContext()
+						.getRequestDispatcher("/views/instructorReport.jsp");
+				dispatcher.forward(request, response);
+			}
+	    	
+	    	else if(str.equals("/siteJoinInstructor")){
+				Statement statement = getConnection().createStatement();
+				
+				PreparedStatement ps = getConnection().prepareStatement("SELECT instructor.instructorId,instructor.name as instructor_name,instructor.lastName,site.name FROM instructor INNER JOIN site ON instructor.instructorId=site.instructorId");
+                ResultSet rs = ps.executeQuery();
+                request.setAttribute("rs", rs);
+                statement.close();
+				RequestDispatcher dispatcher = getServletContext()
+						.getRequestDispatcher("/views/siteJoinInstructor.jsp");
+				dispatcher.forward(request, response);
+			}
+	    	
+		     	
+	    	else if(str.equals("/groupSiteJoinInstructor")){
+				Statement statement = getConnection().createStatement();
+				
+				PreparedStatement ps = getConnection().prepareStatement
+			("SELECT instructor.instructorId,instructor.name,instructor.lastName,count(*)as number_of_sites"
+			+" FROM instructor INNER JOIN site "
+	    	+" ON instructor.instructorId=site.instructorId "
+	    	+" GROUP BY instructor.instructorId");
+                ResultSet rs = ps.executeQuery();
+                request.setAttribute("rs", rs);
+                statement.close();
+				RequestDispatcher dispatcher = getServletContext()
+						.getRequestDispatcher("/views/groupSiteJoinInstructor.jsp");
+				dispatcher.forward(request, response);
+			}
 	    	
 	    	
 ////---------index--------------------------------------------------------

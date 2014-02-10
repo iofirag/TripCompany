@@ -68,6 +68,23 @@
   filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 }
 
+.btn-purple {
+  background-color: hsl(281, 78%, 33%) !important;
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#a01bde", endColorstr="#6c1295");
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#a01bde), to(#6c1295));
+  background-image: -moz-linear-gradient(top, #a01bde, #6c1295);
+  background-image: -ms-linear-gradient(top, #a01bde, #6c1295);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #a01bde), color-stop(100%, #6c1295));
+  background-image: -webkit-linear-gradient(top, #a01bde, #6c1295);
+  background-image: -o-linear-gradient(top, #a01bde, #6c1295);
+  background-image: linear-gradient(#a01bde, #6c1295);
+  border-color: #6c1295 #6c1295 hsl(281, 78%, 29%);
+  color: #fff !important;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.26);
+  -webkit-font-smoothing: antialiased;
+}
+
 .btn-primary:hover,
 .btn-primary:focus {
   background-color: #2d6ca2;

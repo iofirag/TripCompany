@@ -59,7 +59,7 @@
 				
 					<form action="../controller/twoFiltersSelect" method="get">
 				    Trip name : <input type="Text" name="tripName">
-				    Number of travelers : <input type="Text" name="numOfTravelers">
+				    Number of travelers at least : <input type="Text" name="numOfTravelers">
 				    <!-- submit-button delete trip -->
 				    <button type="submit" class="btn btn-primary">Show</button>
 				</form>
@@ -124,7 +124,19 @@
 			   		<input type="Text" name="tripPrice">
 			   		<button type="submit" class="btn btn-warning">Show trips</button>
 			   	</form>
-				
+			</div>
+		</div>
+
+
+<!-- Reports -->
+		<div class="panel panel-primary">
+		<div class="panel-heading">Reports</div>
+		  	<div class="panel-body">
+			   	<a href="../controller/instructorReport"><button class="btn btn-primary">All Instructors</button></a>
+			   	
+			   	<a href="../controller/siteJoinInstructor"><button class="btn btn-primary">All Instructors with their sites</button></a>
+			   	
+			   	<a href="../controller/groupSiteJoinInstructor"><button class="btn btn-primary">Number of sites per instructor</button></a>
 			</div>
 		</div>
 
